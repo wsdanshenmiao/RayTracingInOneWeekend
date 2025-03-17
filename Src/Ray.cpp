@@ -5,7 +5,7 @@ namespace DSM {
         :m_Direction(0), m_Origin(0){
     }
 
-    Ray::Ray(Vector3f origin, Vector3f direction) noexcept
+    Ray::Ray(const Vector3f& origin, const Vector3f& direction) noexcept
         :m_Direction(direction.Normalized()), m_Origin(origin){
     }
 

@@ -49,7 +49,8 @@ namespace DSM{
         static constexpr Vector Scale(const Vector& v1, const Vector& v2) noexcept;
         static constexpr Vector Scale(const Vector& v, const T& s) noexcept;
         static constexpr Vector Reflect(const Vector& v, const Vector& n) noexcept;
-        static constexpr Vector Refract(const Vector& v, const Vector& n, float ) noexcept;
+        // 根据法线和折射率计算折射光线
+        static constexpr Vector Refract(const Vector& v, const Vector& n, float refractiveIndex) noexcept;
         
     private:
         std::array<T, N> m_Data;
@@ -267,6 +268,15 @@ namespace DSM{
     constexpr Vector<T, N> Vector<T, N>::Reflect(const Vector& v, const Vector& n) noexcept
     {
         return v - 2.0f * (v * n) * n;
+    }
+
+    template <typename T, std::size_t N> requires std::is_arithmetic_v<T>
+    constexpr Vector<T, N> Vector<T, N>::Refract(const Vector& v, const Vector& n, float refractiveIndex) noexcept
+    {
+        float cosTheta = std::min(1.f, -v * n);
+        auto outPerp = refractiveIndex * (v + cosTheta * n);
+        auto outParallel = -std::sqrt(std::abs(1.0f - outPerp.SqrMagnitude())) * n;
+        return outPerp + outParallel;
     }
 
 

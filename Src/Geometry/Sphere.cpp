@@ -17,12 +17,11 @@ namespace DSM {
         if (discriminant < 0) { // 没有根则不相交
             return false;
         }
-        float sqrtD = sqrt(discriminant);
+        float sqrtD = std::sqrt(discriminant);
         float root = (h - sqrtD) / a;  // 计算方程的根
-        auto outRange = [&interval](const auto& root){return !interval.Surrounds(root);};
-        if (outRange(root)) { //不再范围内
+        if (!interval.Surrounds(root)) { //不再范围内
             root = (h + sqrtD) / a;
-            if (outRange(root)) {
+            if (!interval.Surrounds(root)) {
                 return false;
             }
         }

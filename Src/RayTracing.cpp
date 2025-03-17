@@ -15,13 +15,15 @@ namespace DSM {
         
         auto materialGround = std::make_shared<LambertMat>(Color{0.8, 0.8, 0.0});
         auto materialCenter = std::make_shared<LambertMat>(Color{0.1, 0.2, 0.5});
-        auto materialLeft   = std::make_shared<MetalMat>(Color{0.8, 0.8, 0.8}, 1);
-        auto materialRight  = std::make_shared<MetalMat>(Color{0.8, 0.6, 0.2}, 0.3);
+        auto materialRight = std::make_shared<MetalMat>(Color{0.8, 0.8, 0.8}, 0.3f);
+        auto materialLeft = std::make_shared<DielectricMat>(1.50);
+        auto materialBbubble = std::make_shared<DielectricMat>(1.00 / 1.50);
 
         m_World->Add(std::make_shared<Sphere>(Vector3f{0.0, -100.5, 1.0}, 100.0, materialGround));
         m_World->Add(std::make_shared<Sphere>(Vector3f{0.0, 0.0, 1.2},   0.5, materialCenter));
         m_World->Add(std::make_shared<Sphere>(Vector3f{-1.0, 0.0, 1.0},   0.5, materialLeft));
         m_World->Add(std::make_shared<Sphere>(Vector3f{1.0, 0.0, 1.0},   0.5, materialRight));
+        m_World->Add(std::make_shared<Sphere>(Vector3f{-1.0,    0.0, 1.0},   0.4, materialBbubble));
         
         camera.Render(*m_World);
     }

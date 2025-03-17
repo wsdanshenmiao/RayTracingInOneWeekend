@@ -9,7 +9,7 @@ namespace DSM {
     {
     public:
         Ray() noexcept;
-        Ray(Vector3f origin, Vector3f direction) noexcept;
+        Ray(const Vector3f& origin, const Vector3f& direction) noexcept;
         
         const Vector3f& GetDirection() const noexcept;
         const Vector3f& GetOrigin() const noexcept;

@@ -36,6 +36,19 @@ namespace DSM {
         Color m_Albedo;
         float m_Roughness;  // 金属的粗糙程度
     };
+
+    class DielectricMat : public Material
+    {
+    public:
+        DielectricMat(float refractiveIndex) noexcept;
+        virtual bool Scatter(const Ray& ray, const HitRecord& record, Color& attenuation,Ray& scattered) override;
+
+    private:
+        static float Reflectance(float cos, float refractionIndex) noexcept;
+        
+    private:
+        float m_RefractiveIndex;
+    };
     
 }
 

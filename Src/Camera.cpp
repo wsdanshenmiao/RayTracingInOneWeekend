@@ -61,8 +61,9 @@ namespace DSM{
         if (depth < 0) {
             return Color{0, 0, 0};
         }
+        auto interval = Intervalf{0.001f, std::numeric_limits<float>::max()};
         HitRecord hitRecord;
-        if (world.Hit(ray,hitRecord, Intervalf{0.001f, std::numeric_limits<float>::max()})) {
+        if (world.Hit(ray,hitRecord, interval)) {
             Ray scattered{};
             Color attenuation{};
             if (hitRecord.m_Material->Scatter(ray, hitRecord, attenuation, scattered)) {
