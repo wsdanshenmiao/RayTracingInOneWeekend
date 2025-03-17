@@ -1,5 +1,9 @@
 #include "Camera.h"
 #include "Pubh.h"
+#include "Geometry/HittableList.h"
+#include "Color.h"
+#include "Material.h"
+
 
 namespace DSM{
     Camera::Camera(float aspectRatio, std::uint32_t width, std::uint32_t samplePerPixel) noexcept
@@ -36,7 +40,8 @@ namespace DSM{
                     color += GetRayColor(ray, world, m_MaxDepth);
                 }
                 color *= invSamplePerPixel;
-                std::cout << std::format("{} {} {}\n", color.R() ,color.G() ,color.B());
+                auto finalColor = color.GetColor();
+                std::cout << std::format("{} {} {}\n", finalColor[0], finalColor[1], finalColor[2]);
             }
         }
     }
@@ -58,8 +63,12 @@ namespace DSM{
         }
         HitRecord hitRecord;
         if (world.Hit(ray,hitRecord, Intervalf{0.001f, std::numeric_limits<float>::max()})) {
-            auto dir = RandomOnHemiSphere(hitRecord.m_Normal);
-            return 0.5 * GetRayColor(Ray{hitRecord.m_Pos, dir}, world, depth - 1); // 假设吸收率为0.5
+            Ray scattered{};
+            Color attenuation{};
+            if (hitRecord.m_Material->Scatter(ray, hitRecord, attenuation, scattered)) {
+                return attenuation * GetRayColor(scattered, world, depth - 1); // 添加材质
+            }
+            return Color{0, 0, 0};
         }
         
         float y = ray.GetDirection().Normalized()[1];

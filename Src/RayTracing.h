@@ -2,11 +2,12 @@
 #ifndef __RAYTRACING__H__
 #define __RAYTRACING__H__
 
-#include "Color.h"
-#include "Ray.h"
 #include "Geometry/HittableList.h"
 
 namespace DSM {
+    class HittableList;
+    
+    
     class RayTracing
     {
     public:

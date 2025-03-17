@@ -1,5 +1,6 @@
 #include <iostream>
 #include "RayTracing.h"
+#include "Math/Vector.h"
 #include <format>
 
 using namespace DSM;

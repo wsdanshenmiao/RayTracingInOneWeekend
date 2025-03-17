@@ -6,6 +6,9 @@
 #include "../Math/Interval.h"
 
 namespace DSM {
+    struct Material;
+    
+    
     // 相交记录
     struct HitRecord
     {
@@ -13,6 +16,7 @@ namespace DSM {
         Vector3f m_Normal;
         float m_Time;
         bool m_FrontFace;
+        std::shared_ptr<Material> m_Material;
 
         void SetFaceNormal(const Ray& ray, const Vector3f& n)
         {

@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <array>
-#include <concepts>
 
 namespace DSM{
     template<typename T, std::size_t N> requires std::is_arithmetic_v<T>
@@ -29,6 +28,8 @@ namespace DSM{
         constexpr T SqrMagnitude() const noexcept;
         constexpr T Magnitude() const noexcept;
         constexpr Vector Normalized() const noexcept;
+        // 检测该向量是否接近零向量，避免边缘情况
+        constexpr bool NearZero() const;
 
         static constexpr void Normalize(Vector& v) noexcept;
         static constexpr T Distance(const Vector& v1, const Vector& v2) noexcept;
@@ -47,6 +48,8 @@ namespace DSM{
         static constexpr Vector Project(const Vector& v1, const Vector& v2);
         static constexpr Vector Scale(const Vector& v1, const Vector& v2) noexcept;
         static constexpr Vector Scale(const Vector& v, const T& s) noexcept;
+        static constexpr Vector Reflect(const Vector& v, const Vector& n) noexcept;
+        static constexpr Vector Refract(const Vector& v, const Vector& n, float ) noexcept;
         
     private:
         std::array<T, N> m_Data;
@@ -159,6 +162,13 @@ namespace DSM{
         return ret;
     }
 
+    template <typename T, std::size_t N> requires std::is_arithmetic_v<T>
+    constexpr bool Vector<T, N>::NearZero() const
+    {
+        auto s = 1e-8;
+        return m_Data[0] < s && m_Data[1] < s && m_Data[2] < s;
+    }
+
     template<typename T, std::size_t N> requires std::is_arithmetic_v<T>
     constexpr void Vector<T, N>::Normalize(Vector& v) noexcept
     {
@@ -251,6 +261,12 @@ namespace DSM{
     constexpr Vector<T, N> Vector<T, N>::Scale(const Vector& v, const T& s) noexcept
     {
         return v * s;
+    }
+
+    template <typename T, std::size_t N> requires std::is_arithmetic_v<T>
+    constexpr Vector<T, N> Vector<T, N>::Reflect(const Vector& v, const Vector& n) noexcept
+    {
+        return v - 2.0f * (v * n) * n;
     }
 
 

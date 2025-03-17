@@ -2,11 +2,13 @@
 #ifndef __CAMERA__H__
 #define __CAMERA__H__
 
-#include "Color.h"
-#include "Geometry/HittableList.h"
 #include "Math/Vector.h"
 
 namespace DSM {
+    struct HittableList;
+    class Ray;
+    class Color;
+    
     class Camera
     {
     public:
