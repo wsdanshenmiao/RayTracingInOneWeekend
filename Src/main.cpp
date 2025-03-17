@@ -1,11 +1,20 @@
 #include <iostream>
 #include "RayTracing.h"
+#include <format>
 
 using namespace DSM;
 
-int main()
+int main(int argc, char* argv[])
 {
-    RayTracing rayTracing(16.f / 9, 400);
+    if (argc != 1 && argc != 4) {
+        std::cout << std::format("用法: {}{}{}", argv[0], " <宽度>", " <高度>", " <采样数>") << '\n';
+        return -1;
+    }
+    Vector3f args{400, 400, 10};
+    for (int i = 1 ; i < argc ; i++) {
+        args[i - 1] = std::atof(argv[i]);
+    }
+    RayTracing rayTracing(args[0] / args[1], args[0], args[2]);
     rayTracing.Render();
     return 0;
 }

@@ -1,6 +1,7 @@
 #pragma once
 #ifndef __INTERVAL__H__
 #define __INTERVAL__H_
+
 #include <algorithm>
 #include <limits>
 

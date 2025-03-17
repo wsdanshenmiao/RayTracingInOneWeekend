@@ -18,7 +18,7 @@ namespace DSM {
         }
         float sqrtD = sqrt(discriminant);
         float root = (h - sqrtD) / a;  // 计算方程的根
-        auto outRange = [&interval](const auto& root){return !interval.Surrounds(root) || root < 0.f;};
+        auto outRange = [&interval](const auto& root){return !interval.Surrounds(root);};
         if (outRange(root)) { //不再范围内
             root = (h + sqrtD) / a;
             if (outRange(root)) {

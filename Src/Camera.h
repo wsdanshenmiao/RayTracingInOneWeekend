@@ -10,18 +10,25 @@ namespace DSM {
     class Camera
     {
     public:
-        explicit Camera(float aspectRatio = 1, int width = 400) noexcept;
+        explicit Camera(float aspectRatio = 1, std::uint32_t width = 400, std::uint32_t samplePerPixel = 10) noexcept;
 
         void Render(const HittableList& world)const;
 
 
     private:
-        Color GetColor(const Ray& ray, const HittableList& world)const;
+        Ray GetRay(std::uint32_t x, std::uint32_t y)const;
+        Color GetRayColor(const Ray& ray, const HittableList& world, int depth)const;
+        Vector2f GetSquare() const;
 
-    private:
+
+    public:
         float m_AspectRatio = 1;
-        int m_Width = 400;
-        int m_Height;
+        std::uint32_t m_SamplePerPixel = 10;
+        std::uint32_t m_Width = 400;
+        int m_MaxDepth = 10;        // 限制光线追踪最大深度
+        
+    private:
+        std::uint32_t m_Height;
         Vector3f m_Pos;
         Vector3f m_StartPixelCenter;
         Vector3f m_PixelDeltaU;

@@ -1,4 +1,5 @@
 #include "Color.h"
+#include "Math/Interval.h"
 
 namespace DSM {
     Color::Color(float r, float g, float b)
@@ -7,9 +8,10 @@ namespace DSM {
 
     Vector3i Color::GetColor() const
     {
-        int r = int(m_Color[0] * 255.999);
-        int g = int(m_Color[1] * 255.999);
-        int b = int(m_Color[2] * 255.999);
+        static const Intervalf interval(0.000f, 0.999f);
+        int r = int(interval.Clamp(m_Color[0]) * 255.999);
+        int g = int(interval.Clamp(m_Color[1]) * 255.999);
+        int b = int(interval.Clamp(m_Color[2]) * 255.999);
 
         return Vector3i({r, g, b});
     }
