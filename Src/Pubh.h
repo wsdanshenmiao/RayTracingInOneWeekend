@@ -55,6 +55,14 @@ namespace DSM{
         ret = normal * ret < 0 ? -ret : ret;
         return ret;
     }
+
+    inline Vector3f RandomInUnitDisk() {
+        while (true) {
+            auto p = Vector3f{RandomFloat(-1,1), RandomFloat(-1,1), 0};
+            if (p.SqrMagnitude() < 1)
+                return p;
+        }
+    }
     
 }
 

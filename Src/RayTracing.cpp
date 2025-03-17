@@ -23,7 +23,13 @@ namespace DSM {
         m_World->Add(std::make_shared<Sphere>(Vector3f{0.0, 0.0, 1.2},   0.5, materialCenter));
         m_World->Add(std::make_shared<Sphere>(Vector3f{-1.0, 0.0, 1.0},   0.5, materialLeft));
         m_World->Add(std::make_shared<Sphere>(Vector3f{1.0, 0.0, 1.0},   0.5, materialRight));
-        m_World->Add(std::make_shared<Sphere>(Vector3f{-1.0,    0.0, 1.0},   0.4, materialBbubble));
+        m_World->Add(std::make_shared<Sphere>(Vector3f{-1.0, 0.0, 1.0},   0.4, materialBbubble));
+        camera.m_Lookfrom = {-2,2,-1};
+        camera.m_Lookat = {0,0,1};
+        camera.m_Vup = {0,1,0};
+        camera.m_Vfov = 20;
+        camera.m_DefocusAngle = 10;
+        camera.m_FocusDist = 3.4f;
         
         camera.Render(*m_World);
     }
