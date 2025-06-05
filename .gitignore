@@ -24,3 +24,6 @@ lib/
 *.lastcodeanalysissucceeded
 !dxtex.exe
 *.exe
+
+
+.xmake
