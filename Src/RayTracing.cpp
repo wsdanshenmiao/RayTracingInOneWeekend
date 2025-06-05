@@ -13,23 +13,58 @@ namespace DSM {
     {
         Camera camera{m_AspectRatio, m_Width, m_SamplePerPixel};
         
-        auto materialGround = std::make_shared<LambertMat>(Color{0.8, 0.8, 0.0});
-        auto materialCenter = std::make_shared<LambertMat>(Color{0.1, 0.2, 0.5});
-        auto materialRight = std::make_shared<MetalMat>(Color{0.8, 0.8, 0.8}, 0.3f);
-        auto materialLeft = std::make_shared<DielectricMat>(1.50);
-        auto materialBbubble = std::make_shared<DielectricMat>(1.00 / 1.50);
+        auto ground_material = std::make_shared<LambertMat>(Color(0.5, 0.5, 0.5));
+        m_World->Add(std::make_shared<Sphere>(Vector3f{0, -1000, 0}, 1000, ground_material));
 
-        m_World->Add(std::make_shared<Sphere>(Vector3f{0.0, -100.5, 1.0}, 100.0, materialGround));
-        m_World->Add(std::make_shared<Sphere>(Vector3f{0.0, 0.0, 1.2},   0.5, materialCenter));
-        m_World->Add(std::make_shared<Sphere>(Vector3f{-1.0, 0.0, 1.0},   0.5, materialLeft));
-        m_World->Add(std::make_shared<Sphere>(Vector3f{1.0, 0.0, 1.0},   0.5, materialRight));
-        m_World->Add(std::make_shared<Sphere>(Vector3f{-1.0, 0.0, 1.0},   0.4, materialBbubble));
-        camera.m_Lookfrom = {-2,2,-1};
-        camera.m_Lookat = {0,0,1};
-        camera.m_Vup = {0,1,0};
+        for (int a = -11; a < 11; a++) {
+            for (int b = -11; b < 11; b++) {
+                auto choose_mat = RandomFloat();
+                Vector3f center{a + 0.9f * RandomFloat(), 0.2f, b + 0.9f * RandomFloat()};
+
+                if ((center - Vector3f{4, 0.2, 0}).Magnitude() > 0.9) {
+                    std::shared_ptr<Material> sphereMaterial;
+
+                    auto randomColor =  Color{RandomFloat(0, 1), RandomFloat(0, 1), RandomFloat(0, 1)};
+                    if (choose_mat < 0.8) {
+                        // diffuse
+                        auto albedo = randomColor;
+                        sphereMaterial = std::make_shared<LambertMat>(albedo);
+                        m_World->Add(std::make_shared<Sphere>(center, 0.2, sphereMaterial));
+                    }
+                    else if (choose_mat < 0.95) {
+                        // metal
+                        auto albedo = randomColor;
+                        auto fuzz = RandomFloat(0, 0.5);
+                        sphereMaterial = std::make_shared<MetalMat>(albedo, fuzz);
+                        m_World->Add(std::make_shared<Sphere>(center, 0.2, sphereMaterial));
+                    }
+                    else {
+                        // glass
+                        sphereMaterial = std::make_shared<DielectricMat>(1.5);
+                        m_World->Add(std::make_shared<Sphere>(center, 0.2, sphereMaterial));
+                    }
+                }
+            }
+        }
+
+        auto material1 = std::make_shared<DielectricMat>(1.5);
+        m_World->Add(std::make_shared<Sphere>(Vector3f{0, 1, 0}, 1.0, material1));
+
+        auto material2 = std::make_shared<LambertMat>(Color{0.4, 0.2, 0.1});
+        m_World->Add(std::make_shared<Sphere>(Vector3f{-4, 1, 0}, 1.0, material2));
+
+        auto material3 = std::make_shared<MetalMat>(Color(0.7, 0.6, 0.5), 0.0);
+        m_World->Add(std::make_shared<Sphere>(Vector3f{4, 1, 0}, 1.0, material3));
+
+        camera.m_MaxDepth = 20;
+
         camera.m_Vfov = 20;
-        camera.m_DefocusAngle = 10;
-        camera.m_FocusDist = 3.4f;
+        camera.m_Lookfrom = {13, 2, 3};
+        camera.m_Lookat = {0, 0, 0};
+        camera.m_Vup = {0, 1, 0};
+
+        camera.m_DefocusAngle = 0.6f;
+        camera.m_FocusDist = 10.0;
         
         camera.Render(*m_World);
     }

@@ -6,9 +6,9 @@ set_languages("c99", "cxx20")
 set_encodings("utf-8")
 
 if is_mode("debug") then 
-    binDir = path.join(os.projectdir(), "Bin/Debug")
+    binDir = path.join(os.projectdir(), "bin/debug")
 else 
-    binDir = path.join(os.projectdir(), "Bin/Release")
+    binDir = path.join(os.projectdir(), "bin/release")
 end 
 
 target(projectName)
