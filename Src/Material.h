@@ -12,7 +12,7 @@ namespace DSM {
     {
         virtual ~Material() = default;
 
-        virtual bool Scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered) = 0;
+        virtual bool Scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered) const = 0;
     };
 
 
@@ -20,7 +20,7 @@ namespace DSM {
     {
     public:
         LambertMat(const Color& albedo) noexcept;
-        virtual bool Scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered) override;
+        virtual bool Scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered) const override;
         
     private:
         Color m_Albedo;
@@ -30,7 +30,7 @@ namespace DSM {
     {
     public:
         MetalMat(const Color& albedo, float roughness = 0.4f) noexcept;
-        virtual bool Scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered) override;
+        virtual bool Scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered) const override;
 
     private:
         Color m_Albedo;
@@ -41,7 +41,7 @@ namespace DSM {
     {
     public:
         DielectricMat(float refractiveIndex) noexcept;
-        virtual bool Scatter(const Ray& ray, const HitRecord& record, Color& attenuation,Ray& scattered) override;
+        virtual bool Scatter(const Ray& ray, const HitRecord& record, Color& attenuation,Ray& scattered) const override;
 
     private:
         static float Reflectance(float cos, float refractionIndex) noexcept;

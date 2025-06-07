@@ -3,11 +3,13 @@
 namespace DSM{
     void HittableList::Add(std::shared_ptr<Hittable> hittable)
     {
+        std::lock_guard lock{ m_Mutex };
         m_Objects.emplace_back(hittable);
     }
 
     void HittableList::Clear() noexcept
     {
+        std::lock_guard lock{ m_Mutex };
         m_Objects.clear();
     }
 

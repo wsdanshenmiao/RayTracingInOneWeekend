@@ -3,9 +3,10 @@
 #define __CAMERA__H__
 
 #include "Math/Vector.h"
+#include "Image.h"
 
 namespace DSM {
-    struct HittableList;
+    class HittableList;
     class Ray;
     class Color;
     
@@ -14,7 +15,7 @@ namespace DSM {
     public:
         explicit Camera(float aspectRatio = 1, std::uint32_t width = 400, std::uint32_t samplePerPixel = 10) noexcept;
 
-        void Render(const HittableList& world);
+        const Image& Render(const HittableList& world);
 
 
     private:
@@ -23,6 +24,10 @@ namespace DSM {
         Color GetRayColor(const Ray& ray, const HittableList& world, int depth)const;
         Vector2f GetSquare() const;
         Vector3f DefocusDiskSample() const;
+		std::vector<Color> Render(
+			const HittableList& world,
+			std::uint32_t beginW, std::uint32_t endW,
+			std::uint32_t beginH, std::uint32_t endH);
 
 
     public:
@@ -34,8 +39,8 @@ namespace DSM {
         Vector3f m_Lookfrom = Vector3f{0,0,0};  // 在哪看
         Vector3f m_Lookat = Vector3f{0,0,-1};   // 看哪里
         Vector3f m_Vup = Vector3f{0,1,0};
-        float m_DefocusAngle = 0;
-        float m_FocusDist = 10;
+		float m_DefocusAngle = 0; // 焦散角度，也就是景深
+		float m_FocusDist = 10; // 焦距
     
     private:
         std::uint32_t m_Height;
@@ -45,6 +50,8 @@ namespace DSM {
         Vector3f m_PixelDeltaV;
         Vector3f m_DefocusDiskU;
         Vector3f m_DefocusDiskV;
+
+        Image m_Image;
     };
 
 

@@ -1,18 +1,19 @@
 #include "RayTracing.h"
-#include "Camera.h"
 #include "Material.h"
 #include "Pubh.h"
 #include "Geometry/Sphere.h"
 
 namespace DSM {
     RayTracing::RayTracing(float aspectRatio, std::uint32_t width, std::uint32_t samplePerPixel)
-        :m_AspectRatio(aspectRatio), m_Width(width), m_SamplePerPixel(samplePerPixel), m_World(std::make_unique<HittableList>()){
+        :m_AspectRatio(aspectRatio), 
+        m_Width(width), 
+        m_SamplePerPixel(samplePerPixel), 
+        m_World(std::make_unique<HittableList>()),
+        m_Camera(m_AspectRatio, m_Width, m_SamplePerPixel){
     }
     
-    void RayTracing::Render() const
+    const Image& RayTracing::Render()
     {
-        Camera camera{m_AspectRatio, m_Width, m_SamplePerPixel};
-        
         auto ground_material = std::make_shared<LambertMat>(Color(0.5, 0.5, 0.5));
         m_World->Add(std::make_shared<Sphere>(Vector3f{0, -1000, 0}, 1000, ground_material));
 
@@ -56,16 +57,16 @@ namespace DSM {
         auto material3 = std::make_shared<MetalMat>(Color(0.7, 0.6, 0.5), 0.0);
         m_World->Add(std::make_shared<Sphere>(Vector3f{4, 1, 0}, 1.0, material3));
 
-        camera.m_MaxDepth = 20;
+        m_Camera.m_MaxDepth = 20;
 
-        camera.m_Vfov = 20;
-        camera.m_Lookfrom = {13, 2, 3};
-        camera.m_Lookat = {0, 0, 0};
-        camera.m_Vup = {0, 1, 0};
+        m_Camera.m_Vfov = 20;
+        m_Camera.m_Lookfrom = {13, 2, 3};
+        m_Camera.m_Lookat = {0, 0, 0};
+        m_Camera.m_Vup = {0, 1, 0};
 
-        camera.m_DefocusAngle = 0.6f;
-        camera.m_FocusDist = 10.0;
+        m_Camera.m_DefocusAngle = 0.6f;
+        m_Camera.m_FocusDist = 10.0;
         
-        camera.Render(*m_World);
+        return m_Camera.Render(*m_World);
     }
 }

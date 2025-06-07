@@ -7,7 +7,7 @@ namespace DSM {
         :m_Albedo(albedo){
     }
 
-    bool LambertMat::Scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered)
+    bool LambertMat::Scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered) const
     {
         auto reflectDir = record.m_Normal + RandomUnitVector3f();   // 可能会出现零向量
         if (reflectDir.NearZero()) {    // 避免出现零向量
@@ -22,7 +22,7 @@ namespace DSM {
         :m_Albedo(albedo), m_Roughness(std::min(1.f, roughness)){
     }
 
-    bool MetalMat::Scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered)
+    bool MetalMat::Scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered) const
     {
         auto reflectDir = Vector3f::Reflect(ray.GetDirection(), record.m_Normal);
         reflectDir = reflectDir.Normalized() + RandomUnitVector3f() * m_Roughness;  // 将光线随机散射
@@ -35,7 +35,7 @@ namespace DSM {
         :m_RefractiveIndex(refractiveIndex){
     }
 
-    bool DielectricMat::Scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered)
+    bool DielectricMat::Scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered) const
     {
         attenuation = Color{1,1,1};
         auto ri = record.m_FrontFace ? 1.f / m_RefractiveIndex : m_RefractiveIndex;   // 判断在内部还是外部，从而判断折射率

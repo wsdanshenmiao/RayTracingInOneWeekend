@@ -1,21 +1,34 @@
 #include <iostream>
 #include "RayTracing.h"
 #include "Math/Vector.h"
+#include "Image.h"
 #include <format>
 
 using namespace DSM;
 
 int main(int argc, char* argv[])
 {
-    if (argc != 1 && argc != 4) {
-        std::cout << std::format("用法: {}{}{}", argv[0], " <宽度>", " <高度>", " <采样数>") << '\n';
+    bool useArg = argc == 5;
+    if (argc != 1 && argc != 5) {
+        std::cout << std::format("Usage: {} <Width> <Height> <Sample Count> <Output Filename>\n", argv[0]);
         return -1;
     }
-    Vector3f args{400, 400, 10};
+
+    Vector3f args{400, 400, 1};
     for (int i = 1 ; i < argc ; i++) {
-        args[i - 1] = std::atof(argv[i]);
+        args[i - 1] = std::max(std::atof(argv[i]), 1.);
     }
     RayTracing rayTracing(args[0] / args[1], args[0], args[2]);
-    rayTracing.Render();
+    auto& image = rayTracing.Render();
+	
+    if (useArg) {
+		std::cout << std::format("Output Filename: {}\n", argv[4]);
+        image.SaveToFilePPM(argv[4]);
+    }
+    else {
+		image.SaveToFilePPM("output.ppm");
+		std::clog << "Image saved to output.ppm\n";
+    }
+
     return 0;
 }

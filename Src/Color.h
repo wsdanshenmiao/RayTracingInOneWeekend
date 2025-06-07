@@ -30,7 +30,7 @@ namespace DSM {
         
 
     private:
-        Vector3f m_Color;
+        Vector3f m_Color{};
     };
 
     Color operator+(const Color& left, const Color& right) noexcept;
