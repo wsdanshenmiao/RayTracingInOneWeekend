@@ -4,7 +4,7 @@
 #include "Color.h"
 #include "Material.h"
 #include <future>
-#include <string>
+#include <format>
 
 namespace DSM{
     Camera::Camera(float aspectRatio, std::uint32_t width, std::uint32_t samplePerPixel) noexcept
@@ -21,40 +21,41 @@ namespace DSM{
         UpdateCamera();
 
         // 计算需要分配的线程数
-        constexpr std::size_t minWidthPerThread = 128;
-        constexpr std::size_t minHeightPerThread = 128;
-		const std::size_t maxThreadsWidth = (m_Width + minWidthPerThread - 1) / minWidthPerThread;
-		const std::size_t maxThreadsHeight = (m_Height + minHeightPerThread - 1) / minHeightPerThread;
+		const bool rowSplit = m_Width < m_Height;
+        const std::size_t maxThreads = rowSplit ? m_Width : m_Height;
 
-		const std::size_t hardwareThreads = std::thread::hardware_concurrency();
-		const std::size_t threadCount = (hardwareThreads > 2) ? hardwareThreads : 2;
+        const std::size_t hardwareThreads = std::thread::hardware_concurrency();
+        const std::size_t threadCount = std::min(hardwareThreads > 0 ? 
+            hardwareThreads : 2, maxThreads);
 
-		// 计算线程数
-		const std::size_t threadCountW = std::min(threadCount / 2, maxThreadsWidth);
-		const std::size_t threadCountH = std::min(threadCount - threadCountW, maxThreadsHeight);
+        const std::size_t blockSize = (m_Height + threadCount - 1) / threadCount;
 
-		// 每个线程处理的块大小
-        const std::size_t blockWidth = (m_Width + threadCountW - 1) / threadCountW;
-		const std::size_t blockHeight = (m_Height + threadCountH - 1) / threadCountH;
+        std::vector<std::future<std::vector<Color>>> results(threadCount);
 
-        std::vector<std::future<std::vector<Color>>> results(threadCountW * threadCountH);
-        
-        for (std::size_t j = 0; j < threadCountH; ++j) {
-			for (std::size_t i = 0; i < threadCountW; ++i) {
-				std::uint32_t beginW = i * blockWidth;
-                std::uint32_t endW = i == (threadCountW - 1) ? m_Width : ((i + 1) * blockWidth);
-				std::uint32_t beginH = j * blockHeight;
-                std::uint32_t endH = j == (threadCountH - 1) ? m_Height : ((j + 1) * blockHeight);
+        for (std::size_t i = 0; i < threadCount; ++i) {
+            std::uint32_t beginW = 0, endW = m_Width;
+			std::uint32_t beginH = i * blockSize, endH = (i + 1) * blockSize;
+            if (beginH >= m_Height) break;
+            if (endH > m_Height) {
+                endH = m_Height;
+            }
 
-				results[j * threadCountH + i] = std::async(std::launch::async,
-                    [this, &world, beginW, endW, beginH, endH] {
+            results[i] = std::async(std::launch::async,
+                [this, &world, beginW, endW, beginH, endH] {
                     return this->Render(world, beginW, endW, beginH, endH);
-                    });
-			}
+                });
         }
 
 		std::vector<Color> finalResult(m_Width * m_Height);
-
+		auto resultIt = finalResult.begin();
+        for (std::size_t i = 0; i < results.size(); ++i) {
+			auto& result = results[i];
+            if (!result.valid()) continue;
+            std::clog << "\rScanlines remaining: " << (threadCount - i) << ' ' << std::flush;
+			auto partialResult = result.get();
+            std::copy(partialResult.begin(), partialResult.end(), resultIt);
+            resultIt += partialResult.size();
+        }
 		m_Image.SetData(m_Width, m_Height, std::move(finalResult));
 
         return m_Image;
@@ -79,7 +80,7 @@ namespace DSM{
 					color += GetRayColor(ray, world, m_MaxDepth);
 				}
 				color *= invSamplePerPixel;
-                result[(j - beginH) * height + (i - beginW)] = color;
+                result[(j - beginH) * width + (i - beginW)] = color;
 			}
 		}
 

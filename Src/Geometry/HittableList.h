@@ -5,7 +5,7 @@
 #include "Hittable.h"
 #include <memory>
 #include <vector>
-#include <mutex>
+#include <shared_mutex>
 
 namespace DSM {
 
@@ -21,7 +21,7 @@ namespace DSM {
 
     private:
         std::vector<std::shared_ptr<Hittable>> m_Objects{};
-        std::mutex m_Mutex{};
+        mutable std::shared_mutex m_Mutex{};    // 共享互斥锁，可多个线程同时调用Hit
     };
 }
 

@@ -15,6 +15,8 @@ namespace DSM{
 
     bool HittableList::Hit(const Ray& ray, HitRecord& hitRecord, Intervalf interval) const
     {
+        std::shared_lock lock{ m_Mutex };
+
         HitRecord tmpHitRecord;
         bool hitAnything = false;
         float closestSoFar = interval.GetMax();
