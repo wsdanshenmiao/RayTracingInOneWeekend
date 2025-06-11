@@ -3,6 +3,9 @@
 
 #include <iostream>
 #include <array>
+#include <cmath>
+#include <cstring>
+#include <memory>
 
 namespace DSM{
     template<typename T, std::size_t N> requires std::is_arithmetic_v<T>
@@ -59,7 +62,8 @@ namespace DSM{
     
     template<typename T, std::size_t N> requires std::is_arithmetic_v<T>
     constexpr Vector<T, N>::Vector() noexcept
-        : m_Data(0){
+    {
+        m_Data.fill(0);
     }
 
     template<typename T, std::size_t N> requires std::is_arithmetic_v<T>
