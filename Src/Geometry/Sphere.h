@@ -10,11 +10,12 @@ namespace DSM {
     {
     public:
         Sphere(Vector3f center, float radius, std::shared_ptr<Material> mat) noexcept;
+        Sphere(Vector3f center0, Vector3f center1, float radius, std::shared_ptr<Material> mat) noexcept;
         
         virtual bool Hit(const Ray& ray, HitRecord& hitRecord, Intervalf interval = Intervalf{}) const override;
     
     private:
-        Vector3f m_Center;
+        Ray m_Center;
         float m_Radius;
         std::shared_ptr<Material> m_Material;
     };

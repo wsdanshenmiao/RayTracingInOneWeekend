@@ -178,7 +178,9 @@ namespace DSM{
     template<typename T, std::size_t N> requires std::is_arithmetic_v<T>
     constexpr void Vector<T, N>::Normalize(Vector& v) noexcept
     {
-        T divisor = 1 / v.Magnitude();
+        float magnitude = v.Magnitude();
+        if(magnitude == 0) return;
+        T divisor = 1 / magnitude;
         for (auto& elem : v.m_Data) {
             elem *= divisor;
         }

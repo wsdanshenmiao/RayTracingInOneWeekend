@@ -30,7 +30,8 @@ namespace DSM {
                         // diffuse
                         auto albedo = randomColor;
                         sphereMaterial = std::make_shared<LambertMat>(albedo);
-                        m_World->Add(std::make_shared<Sphere>(center, 0.2, sphereMaterial));
+                        Vector3f center1 = center + Vector3f({0, RandomFloat(0.f, .5f), 0});
+                        m_World->Add(std::make_shared<Sphere>(center, center1, 0.2, sphereMaterial));
                     }
                     else if (choose_mat < 0.95) {
                         // metal
