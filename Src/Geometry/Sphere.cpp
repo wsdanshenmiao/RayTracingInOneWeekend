@@ -2,10 +2,9 @@
 #include "../Material.h"
 
 namespace DSM {
-
     bool Sphere::Hit(const Ray& ray, HitRecord& hitRecord, Intervalf interval) const
     {
-		Vector3f center = m_Center.At(ray.GetTime());
+        Vector3f center = m_Center.At(ray.GetTime());
         auto oc = center - ray.GetOrigin();
         float a = ray.GetDirection().SqrMagnitude();
         float h = ray.GetDirection() * oc;
@@ -27,6 +26,7 @@ namespace DSM {
         hitRecord.m_Time = root;
         hitRecord.m_Pos = ray.At(root);
         hitRecord.m_Material = m_Material;
+        auto n = (hitRecord.m_Pos - center) / m_Radius;
         auto n = (hitRecord.m_Pos - center) / m_Radius;
         hitRecord.SetFaceNormal(ray, n);
 
