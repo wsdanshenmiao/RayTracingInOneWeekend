@@ -6,7 +6,7 @@ namespace DSM {
     }
 
     Ray::Ray(const Vector3f& origin, const Vector3f& direction, float time) noexcept
-        :m_Direction(direction.Normalized()), m_Origin(origin), m_Time(time){
+        :m_Direction(direction), m_Origin(origin), m_Time(time){
     }
 
     const Vector3f& Ray::GetDirection() const noexcept

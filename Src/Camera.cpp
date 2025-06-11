@@ -124,7 +124,8 @@ namespace DSM{
         auto offset = GetSquare();
         auto pixelSample = m_StartPixelCenter + (float(x) + offset[0]) * m_PixelDeltaU + (float(y) + offset[1]) * m_PixelDeltaV;
         auto rayOrigin = (m_DefocusAngle <= 0) ? m_Pos : DefocusDiskSample();
-        return Ray(rayOrigin, pixelSample - rayOrigin);
+        float rayTime = RandomFloat();
+        return Ray(rayOrigin, (pixelSample - rayOrigin).Normalized(), rayTime);
     }
 
     // 获取光线采样到的颜色

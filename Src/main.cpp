@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    Vector3f args{400, 400, 1};
+    Vector3f args{400, 400, 10};
     for (int i = 1 ; i < argc ; i++) {
         args[i - 1] = std::max(std::atof(argv[i]), 1.);
     }
