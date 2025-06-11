@@ -26,6 +26,8 @@ namespace DSM{
         T& operator[](const std::size_t& i);
         const T& operator[](const std::size_t& i) const;
 
+        constexpr bool operator==(const Vector& other);
+
         constexpr std::size_t size() const noexcept;
         constexpr void Fill(const T& v) noexcept;
         constexpr T SqrMagnitude() const noexcept;
@@ -179,7 +181,7 @@ namespace DSM{
     constexpr void Vector<T, N>::Normalize(Vector& v) noexcept
     {
         float magnitude = v.Magnitude();
-        if(magnitude == 0) return;
+        if (magnitude == 0) return;
         T divisor = 1 / magnitude;
         for (auto& elem : v.m_Data) {
             elem *= divisor;

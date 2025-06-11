@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
     }
 
     Vector3f args{400, 400, 1};
-    for (int i = 1 ; i < 4 ; i++) {
+    for (int i = 1 ; i < argc && i < 4 ; i++) {
         args[i - 1] = std::max(std::atof(argv[i]), 1.);
     }
     RayTracing rayTracing(args[0] / args[1], args[0], args[2]);

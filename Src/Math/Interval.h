@@ -13,6 +13,13 @@ namespace DSM{
     public:
         constexpr Interval() noexcept;
         constexpr Interval(T min, T max) noexcept;
+        constexpr Interval(const Interval&) noexcept = default;
+        constexpr Interval(Interval&&) noexcept = default;
+        constexpr Interval& operator=(const Interval&) noexcept = default;
+        constexpr Interval& operator=(Interval&&) noexcept = default;
+
+        constexpr std::partial_ordering operator<=>(const Interval& other) const noexcept;
+        constexpr bool operator==(const Interval& other) const noexcept = default;
 
         constexpr T Size() const noexcept;
         constexpr T Clamp(T value) const noexcept;
@@ -38,6 +45,22 @@ namespace DSM{
     }
 
     template <typename T> requires std::is_arithmetic_v<T>
+    inline constexpr std::partial_ordering Interval<T>::operator<=>(const Interval &other) const noexcept
+    {
+        if constexpr(m_Min == other.m_Min && m_Max == other.m_Max){
+            return std::partial_ordering::equivalent;
+        }
+        else if(m_Min <= other.m_Min && m_Max >= other.m_Max){
+            return std::partial_ordering::greater;
+        }
+        else if(m_Min >= other.m_Min && m_Max <= other.m_Max){
+            return std::partial_ordering::less;
+        }
+        return std::partial_ordering::unordered;
+    }
+
+    template <typename T>
+        requires std::is_arithmetic_v<T>
     constexpr T Interval<T>::Size() const noexcept
     {
         return m_Max - m_Min;

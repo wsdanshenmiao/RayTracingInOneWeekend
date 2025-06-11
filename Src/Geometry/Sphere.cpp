@@ -27,7 +27,6 @@ namespace DSM {
         hitRecord.m_Pos = ray.At(root);
         hitRecord.m_Material = m_Material;
         auto n = (hitRecord.m_Pos - center) / m_Radius;
-        auto n = (hitRecord.m_Pos - center) / m_Radius;
         hitRecord.SetFaceNormal(ray, n);
 
         return true;
