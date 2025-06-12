@@ -33,6 +33,11 @@ namespace DSM{
         return dist(gen);
     }
 
+    inline int RandomInt(int min = 0, int max = 1)
+    {
+        return int(RandomFloat(min, max));
+    }
+
     inline Vector3f RandomVector3f(float min = 0, float max = 1)
     {
         return Vector3f{RandomFloat(min, max), RandomFloat(min, max), RandomFloat(min, max)};

@@ -7,6 +7,7 @@
 
 namespace DSM {
     struct Material;
+    class AABB;
     
     
     // 相交记录
@@ -29,6 +30,7 @@ namespace DSM {
     {
         virtual ~Hittable() = default;
         virtual bool Hit(const Ray& ray, HitRecord& hitRecord, Intervalf interval = Intervalf{}) const = 0;
+        virtual AABB BoundingBox() const noexcept = 0;
     };
 }
 

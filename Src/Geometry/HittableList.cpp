@@ -3,13 +3,16 @@
 namespace DSM{
     void HittableList::Add(std::shared_ptr<Hittable> hittable)
     {
+        if (hittable == nullptr) return;
         std::lock_guard lock{ m_Mutex };
+		m_BoundingBox = AABB::Uion(m_BoundingBox, hittable->BoundingBox());
         m_Objects.emplace_back(hittable);
     }
 
     void HittableList::Clear() noexcept
     {
         std::lock_guard lock{ m_Mutex };
+		m_BoundingBox = AABB{};
         m_Objects.clear();
     }
 
@@ -30,5 +33,10 @@ namespace DSM{
         }
 
         return hitAnything;
+    }
+    const std::vector<std::shared_ptr<Hittable>>& HittableList::GetObjects() const
+    {
+        std::shared_lock lock{ m_Mutex };
+        return m_Objects;
     }
 }

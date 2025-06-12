@@ -23,11 +23,18 @@ namespace DSM{
 
         constexpr T Size() const noexcept;
         constexpr T Clamp(T value) const noexcept;
+        constexpr Interval Expand(T delta)const noexcept;
         // 判断值是否在该范围内
         bool Surrounds(T value) const noexcept;
         bool Contains(T value) const noexcept;
         constexpr T GetMin() const noexcept;
         constexpr T GetMax() const noexcept;
+
+        void SetMin(T val) noexcept;
+        void SetMax(T val) noexcept;
+
+        constexpr static Interval Intersection(const Interval& i0, const Interval& i1);    // 交集
+        constexpr static Interval Uion(const Interval& i0, const Interval& i1);    // 并集
 
     private:
         T m_Min;
@@ -36,7 +43,7 @@ namespace DSM{
 
     template <typename T> requires std::is_arithmetic_v<T>
     constexpr Interval<T>::Interval() noexcept
-        : m_Min(std::numeric_limits<T>::lowest()), m_Max(std::numeric_limits<T>::max()){
+        : m_Min(std::numeric_limits<T>::max()), m_Max(std::numeric_limits<T>::lowest()){
     }
 
     template <typename T> requires std::is_arithmetic_v<T>
@@ -45,7 +52,7 @@ namespace DSM{
     }
 
     template <typename T> requires std::is_arithmetic_v<T>
-    inline constexpr std::partial_ordering Interval<T>::operator<=>(const Interval &other) const noexcept
+    constexpr std::partial_ordering Interval<T>::operator<=>(const Interval &other) const noexcept
     {
         if constexpr(m_Min == other.m_Min && m_Max == other.m_Max){
             return std::partial_ordering::equivalent;
@@ -59,8 +66,7 @@ namespace DSM{
         return std::partial_ordering::unordered;
     }
 
-    template <typename T>
-        requires std::is_arithmetic_v<T>
+    template <typename T> requires std::is_arithmetic_v<T>
     constexpr T Interval<T>::Size() const noexcept
     {
         return m_Max - m_Min;
@@ -70,6 +76,13 @@ namespace DSM{
     constexpr T Interval<T>::Clamp(T value) const noexcept
     {
         return std::clamp(value, m_Min, m_Max);
+    }
+
+	template<typename T> requires std::is_arithmetic_v<T>
+    constexpr Interval<T> Interval<T>::Expand(T delta) const noexcept
+    {
+        T halfDelta = delta * .5f;
+        return Interval(m_Min - halfDelta, m_Max + halfDelta);
     }
 
     template <typename T> requires std::is_arithmetic_v<T>
@@ -82,6 +95,30 @@ namespace DSM{
     constexpr T Interval<T>::GetMax() const noexcept
     {
         return m_Max;
+    }
+
+    template<typename T> requires std::is_arithmetic_v<T>
+    void Interval<T>::SetMin(T val) noexcept
+    {
+        m_Min = val;
+    }
+
+    template<typename T> requires std::is_arithmetic_v<T>
+    void Interval<T>::SetMax(T val) noexcept
+    {
+        m_Max = val;
+    }
+
+    template<typename T> requires std::is_arithmetic_v<T>
+    constexpr Interval<T> Interval<T>::Intersection(const Interval& i0, const Interval& i1)
+    {
+        return Interval{ std::max(i0.m_Min, i1.m_Min), std::min(i0.m_Max, i1.m_Max) };
+    }
+
+    template<typename T> requires std::is_arithmetic_v<T>
+    inline constexpr Interval<T> Interval<T>::Uion(const Interval& i0, const Interval& i1)
+    {
+        return Interval{ std::min(i0.m_Min, i1.m_Min), std::max(i0.m_Max, i1.m_Max)};
     }
 
     template <typename T> requires std::is_arithmetic_v<T>

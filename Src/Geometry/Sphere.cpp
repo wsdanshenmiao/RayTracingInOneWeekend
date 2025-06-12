@@ -2,6 +2,20 @@
 #include "../Material.h"
 
 namespace DSM {
+    Sphere::Sphere(Vector3f center, float radius, std::shared_ptr<Material> mat) noexcept
+        :m_Center(center, {}), m_Radius(std::max(0.f, radius)), m_Material(mat) {
+        Vector3f rvec{ radius, radius, radius };
+        m_BoundingBox = AABB{ m_Center.GetOrigin() - rvec, m_Center.GetOrigin() + rvec };
+    }
+
+    Sphere::Sphere(Vector3f center0, Vector3f center1, float radius, std::shared_ptr<Material> mat) noexcept
+        :m_Center(center0, center1 - center0), m_Radius(std::max(0.f, radius)), m_Material(mat) {
+        Vector3f rvec{ radius, radius, radius };
+        AABB box0{ center0 - rvec, center0 + rvec };
+        AABB box1{ center1 - rvec, center1 + rvec };
+		m_BoundingBox = AABB::Uion(box0, box1);
+    }
+
     bool Sphere::Hit(const Ray& ray, HitRecord& hitRecord, Intervalf interval) const
     {
         Vector3f center = m_Center.At(ray.GetTime());
