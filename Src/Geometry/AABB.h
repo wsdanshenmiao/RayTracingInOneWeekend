@@ -24,6 +24,7 @@ namespace DSM {
         Intervalf operator[](std::size_t index) const;
 
         bool Hit(const Ray& ray, Intervalf rayT) const;
+        std::size_t LongestAxis() const noexcept;
 
         static AABB Intersection(const AABB& box0, const AABB& box1);
         static AABB Uion(const AABB& box0, const AABB& box1);

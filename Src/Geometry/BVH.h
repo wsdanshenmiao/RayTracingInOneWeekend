@@ -24,9 +24,9 @@ namespace DSM {
             std::size_t axisIndex);
 
     private:
-        AABB m_BoundingBox;
-        std::shared_ptr<Hittable> m_Left;
-        std::shared_ptr<Hittable> m_Right;
+        AABB m_BoundingBox{};
+        std::shared_ptr<Hittable> m_Left{};
+        std::shared_ptr<Hittable> m_Right{};
     };
 
 } // namespace DS

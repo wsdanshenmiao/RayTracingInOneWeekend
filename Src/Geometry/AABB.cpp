@@ -47,6 +47,18 @@ namespace DSM {
         return true;
     }
 
+    std::size_t AABB::LongestAxis() const noexcept
+    {
+        std::size_t ret = 0;
+        if(m_X.Size() > m_Y.Size()){
+            ret = m_X.Size() > m_Z.Size() ? 0 : 2;
+        }
+        else{
+            ret = m_Y.Size() > m_Z.Size() ? 1 : 2;
+        }
+        return ret;
+    }
+
     AABB AABB::Intersection(const AABB& box0, const AABB& box1)
     {
         AABB ret{};

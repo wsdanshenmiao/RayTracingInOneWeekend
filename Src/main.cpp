@@ -1,8 +1,9 @@
 #include <iostream>
+#include <format>
 #include "RayTracing.h"
 #include "Math/Vector.h"
 #include "Image.h"
-#include <format>
+#include "InstrumentorTimer.h"
 
 using namespace DSM;
 
@@ -18,8 +19,11 @@ int main(int argc, char* argv[])
     for (int i = 1 ; i < argc && i < 4 ; i++) {
         args[i - 1] = std::max(std::atof(argv[i]), 1.);
     }
+
+    Instrumentor::BeginSession("RayTracing");
     RayTracing rayTracing(args[0] / args[1], args[0], args[2]);
     auto& image = rayTracing.Render();
+    Instrumentor::EndSession();
 	
     if (useArg) {
 		std::cout << std::format("Output Filename: {}\n", argv[4]);

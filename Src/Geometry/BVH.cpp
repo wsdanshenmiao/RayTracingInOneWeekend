@@ -4,7 +4,11 @@
 namespace DSM {
 	BVH::BVH(std::vector<std::shared_ptr<Hittable>> hittables, std::size_t begin, std::size_t end)
 	{
-		int axisIndex = RandomInt(0, 3);
+		for(const auto& hittable : hittables){
+			m_BoundingBox = AABB::Uion(m_BoundingBox, hittable->BoundingBox());
+		}
+		std::size_t axisIndex = m_BoundingBox.LongestAxis();
+		
 		auto cmpFunc = [axisIndex](const auto& box0, const auto& box1){
 			return BoxCompare(box0, box1, axisIndex);
 		};
@@ -23,8 +27,6 @@ namespace DSM {
 			m_Left = std::make_shared<BVH>(hittables, begin, mid);
 			m_Right = std::make_shared<BVH>(hittables, mid, end);
 		}
-
-		m_BoundingBox = AABB::Uion(m_Left->BoundingBox(), m_Right->BoundingBox());
 	}
 
 	bool BVH::Hit(const Ray& ray, HitRecord& rec, Intervalf interval) const
@@ -39,7 +41,10 @@ namespace DSM {
 		return hitLeft || hitRight;
 	}
 
-    bool BVH::BoxCompare(const std::shared_ptr<Hittable> box0, const std::shared_ptr<Hittable> box1, std::size_t axisIndex)
+    bool BVH::BoxCompare(
+		const std::shared_ptr<Hittable> box0, 
+		const std::shared_ptr<Hittable> box1, 
+		std::size_t axisIndex)
     {
 		Intervalf i0 = box0->BoundingBox()[axisIndex];
 		Intervalf i1 = box1->BoundingBox()[axisIndex];

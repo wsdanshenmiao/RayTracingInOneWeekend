@@ -3,6 +3,7 @@
 #include "Pubh.h"
 #include "Geometry/Sphere.h"
 #include "Geometry/BVH.h"
+#include "InstrumentorTimer.h"
 
 namespace DSM {
     RayTracing::RayTracing(float aspectRatio, std::uint32_t width, std::uint32_t samplePerPixel)
@@ -32,7 +33,7 @@ namespace DSM {
                         auto albedo = randomColor;
                         sphereMaterial = std::make_shared<LambertMat>(albedo);
 						Vector3f center1 = center + Vector3f{ 0, RandomFloat(0, 0.5), 0 };
-                        m_World->Add(std::make_shared<Sphere>(center, center1, 0.2f, sphereMaterial));
+                        m_World->Add(std::make_shared<Sphere>(center, center, 0.2f, sphereMaterial));
                     }
                     else if (choose_mat < 0.95) {
                         // metal
@@ -59,7 +60,9 @@ namespace DSM {
         auto material3 = std::make_shared<MetalMat>(Color(0.7, 0.6, 0.5), 0.0);
         m_World->Add(std::make_shared<Sphere>(Vector3f{4, 1, 0}, 1.0, material3));
 
+        InstrumentationTimer BVHTimer{"BVH Build"};        
         m_World = std::make_unique<HittableList>(std::make_shared<BVH>(*m_World));
+        BVHTimer.Stop();
 
         m_Camera.m_MaxDepth = 20;
 
@@ -71,6 +74,7 @@ namespace DSM {
         m_Camera.m_DefocusAngle = 0.6f;
         m_Camera.m_FocusDist = 10.0;
         
+        InstrumentationTimer RayTracingTimer{"RayTracingTimer"};
         return m_Camera.Render(*m_World);
     }
 }
