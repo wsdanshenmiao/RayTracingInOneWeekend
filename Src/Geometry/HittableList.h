@@ -16,6 +16,7 @@ namespace DSM {
     public:
         HittableList() = default;
         HittableList(std::shared_ptr<Hittable> obj) { Add(obj); }
+        HittableList(std::vector<std::shared_ptr<Hittable>> objs);
         HittableList(const HittableList&) = delete;
         HittableList& operator=(const HittableList&) = delete;
 

@@ -1,6 +1,13 @@
 #include "HittableList.h"
 
 namespace DSM{
+    HittableList::HittableList(std::vector<std::shared_ptr<Hittable>> objs)
+        :m_Objects(std::move(objs)){
+        for(const auto& obj : m_Objects){
+            m_BoundingBox = AABB::Uion(m_BoundingBox, obj->BoundingBox());
+        }
+    }
+
     void HittableList::Add(std::shared_ptr<Hittable> hittable)
     {
         if (hittable == nullptr) return;

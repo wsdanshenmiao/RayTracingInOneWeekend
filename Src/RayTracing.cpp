@@ -9,16 +9,30 @@ namespace DSM {
     RayTracing::RayTracing(float aspectRatio, std::uint32_t width, std::uint32_t samplePerPixel)
         :m_AspectRatio(aspectRatio), 
         m_Width(width), 
-        m_SamplePerPixel(samplePerPixel), 
-        m_World(std::make_unique<HittableList>()),
-        m_Camera(m_AspectRatio, m_Width, m_SamplePerPixel){
+        m_SamplePerPixel(samplePerPixel){
     }
     
     const Image& RayTracing::Render()
     {
-        auto checkTexture = std::make_shared<CheckerTexture>(TextureDesc{10, 10, 0}, 10.0f, Color(0.2, 0.3, 0.1), Color(0.9, 0.9, 0.9));
+        BuildScene0();
+
+        for(std::size_t i = 0; i < m_Scenes.size(); ++i){
+            std::string timerName{"RayTracingTimer" + std::to_string(i)};
+            InstrumentationTimer RayTracingTimer{timerName.c_str()};
+            m_Scenes[i].Render();
+            RayTracingTimer.Stop();
+        }
+
+        return m_Scenes[0].GetCameraImage();
+    }
+    
+    void RayTracing::BuildScene0()
+    {
+        auto checkTexture = std::make_shared<CheckerTexture>(
+            TextureDesc{10, 10, 0}, 10.0f, Color(0.2, 0.3, 0.1), Color(0.9, 0.9, 0.9));
         auto ground_material = std::make_shared<LambertMat>(checkTexture);
-        m_World->Add(std::make_shared<Sphere>(Vector3f{0, -1000, 0}, 1000, ground_material));
+        auto objs = std::make_unique<HittableList>();
+        objs->Add(std::make_shared<Sphere>(Vector3f{0, -1000, 0}, 1000, ground_material));
 
         for (int a = -11; a < 11; a++) {
             for (int b = -11; b < 11; b++) {
@@ -34,48 +48,46 @@ namespace DSM {
                         auto albedo = randomColor;
                         sphereMaterial = std::make_shared<LambertMat>(albedo);
 						Vector3f center1 = center + Vector3f{ 0, RandomFloat(0, 0.5), 0 };
-                        m_World->Add(std::make_shared<Sphere>(center, center, 0.2f, sphereMaterial));
+                        objs->Add(std::make_shared<Sphere>(center, center, 0.2f, sphereMaterial));
                     }
                     else if (choose_mat < 0.95) {
                         // metal
                         auto albedo = randomColor;
                         auto fuzz = RandomFloat(0, 0.5);
                         sphereMaterial = std::make_shared<MetalMat>(albedo, fuzz);
-                        m_World->Add(std::make_shared<Sphere>(center, 0.2, sphereMaterial));
+                        objs->Add(std::make_shared<Sphere>(center, 0.2, sphereMaterial));
                     }
                     else {
                         // glass
                         sphereMaterial = std::make_shared<DielectricMat>(1.5);
-                        m_World->Add(std::make_shared<Sphere>(center, 0.2, sphereMaterial));
+                        objs->Add(std::make_shared<Sphere>(center, 0.2, sphereMaterial));
                     }
                 }
             }
         }
 
         auto material1 = std::make_shared<DielectricMat>(1.5);
-        m_World->Add(std::make_shared<Sphere>(Vector3f{0, 1, 0}, 1.0, material1));
+        objs->Add(std::make_shared<Sphere>(Vector3f{0, 1, 0}, 1.0, material1));
 
         auto material2 = std::make_shared<LambertMat>(Color{0.4, 0.2, 0.1});
-        m_World->Add(std::make_shared<Sphere>(Vector3f{-4, 1, 0}, 1.0, material2));
+        objs->Add(std::make_shared<Sphere>(Vector3f{-4, 1, 0}, 1.0, material2));
 
         auto material3 = std::make_shared<MetalMat>(Color(0.7, 0.6, 0.5), 0.0);
-        m_World->Add(std::make_shared<Sphere>(Vector3f{4, 1, 0}, 1.0, material3));
+        objs->Add(std::make_shared<Sphere>(Vector3f{4, 1, 0}, 1.0, material3));
 
-        InstrumentationTimer BVHTimer{"BVH Build"};        
-        m_World = std::make_unique<HittableList>(std::make_shared<BVH>(*m_World));
+        InstrumentationTimer BVHTimer{"Scene0 BVH Build"};        
+        objs = std::make_unique<HittableList>(std::make_shared<BVH>(*objs));
         BVHTimer.Stop();
 
-        m_Camera.m_MaxDepth = 20;
+        Camera camera;
+        camera.m_MaxDepth = 20;
+        camera.m_Vfov = 20;
+        camera.m_Lookfrom = {13, 2, 3};
+        camera.m_Lookat = {0, 0, 0};
+        camera.m_Vup = {0, 1, 0};
+        camera.m_DefocusAngle = 0.6f;
+        camera.m_FocusDist = 10.0;
 
-        m_Camera.m_Vfov = 20;
-        m_Camera.m_Lookfrom = {13, 2, 3};
-        m_Camera.m_Lookat = {0, 0, 0};
-        m_Camera.m_Vup = {0, 1, 0};
-
-        m_Camera.m_DefocusAngle = 0.6f;
-        m_Camera.m_FocusDist = 10.0;
-        
-        InstrumentationTimer RayTracingTimer{"RayTracingTimer"};
-        return m_Camera.Render(*m_World);
+        m_Scenes.emplace_back(*objs, std::move(camera));
     }
 }

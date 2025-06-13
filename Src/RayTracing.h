@@ -4,6 +4,7 @@
 
 #include "Geometry/HittableList.h"
 #include "Camera.h"
+#include "Scene.h"
 
 namespace DSM {
     class HittableList;
@@ -16,14 +17,16 @@ namespace DSM {
         RayTracing(float aspectRatio, std::uint32_t width, std::uint32_t samplePerPixel);
 
         const Image& Render();
+
+    private:
+        void BuildScene0();
         
     private:
         const float m_AspectRatio;
         std::uint32_t m_Width;
         std::uint32_t m_SamplePerPixel;
-        std::unique_ptr<HittableList> m_World;
 
-        Camera m_Camera;
+        std::vector<Scene> m_Scenes;
     };
 
     
