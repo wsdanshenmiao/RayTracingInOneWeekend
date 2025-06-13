@@ -36,7 +36,9 @@ namespace DSM {
 		}
 
 		bool hitLeft = m_Left->Hit(ray, rec, interval);
-		bool hitRight = m_Right->Hit(ray, rec, interval);
+		// 若击中了左侧的包围盒需要更新最远处
+		bool hitRight = m_Right->Hit(ray, rec, 
+			Intervalf{interval.GetMin(), hitLeft ? rec.m_Time : interval.GetMax()});
 
 		return hitLeft || hitRight;
 	}
