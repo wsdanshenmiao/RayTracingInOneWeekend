@@ -18,16 +18,14 @@ namespace DSM {
         HittableList(std::shared_ptr<Hittable> obj) { Add(obj); }
         HittableList(const HittableList&) = delete;
         HittableList& operator=(const HittableList&) = delete;
-        HittableList(HittableList&&) = default;
-        HittableList& operator=(HittableList&&) = default;
 
         void Add(std::shared_ptr<Hittable> hittable);
         void Clear() noexcept;
 
-        bool Hit(const Ray& ray, HitRecord& hitRecord, Intervalf interval = Intervalf{}) const override;
+        std::optional<HitRecord> Hit(const Ray& ray, Intervalf interval = Intervalf{}) const override;
 		AABB BoundingBox() const noexcept override { return m_BoundingBox; }
 
-        const std::vector<std::shared_ptr<Hittable>>& GetObjects() const;
+        std::vector<std::shared_ptr<Hittable>> GetObjects() const;
 
     private:
         AABB m_BoundingBox{};

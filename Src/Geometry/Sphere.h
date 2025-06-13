@@ -15,7 +15,7 @@ namespace DSM {
 		// 动态的球
         Sphere(Vector3f center0, Vector3f center1, float radius, std::shared_ptr<Material> mat) noexcept;
 
-        bool Hit(const Ray& ray, HitRecord& hitRecord, Intervalf interval = Intervalf{}) const override;
+        std::optional<HitRecord> Hit(const Ray& ray, Intervalf interval = Intervalf{}) const override;
         AABB BoundingBox() const noexcept override { return m_BoundingBox; }
 
     private:

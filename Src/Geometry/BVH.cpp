@@ -4,8 +4,8 @@
 namespace DSM {
 	BVH::BVH(std::vector<std::shared_ptr<Hittable>> hittables, std::size_t begin, std::size_t end)
 	{
-		for(const auto& hittable : hittables){
-			m_BoundingBox = AABB::Uion(m_BoundingBox, hittable->BoundingBox());
+		for(auto objIndex = begin; objIndex < end; ++objIndex){
+			m_BoundingBox = AABB::Uion(m_BoundingBox, hittables[objIndex]->BoundingBox());
 		}
 		std::size_t axisIndex = m_BoundingBox.LongestAxis();
 		
@@ -29,18 +29,21 @@ namespace DSM {
 		}
 	}
 
-	bool BVH::Hit(const Ray& ray, HitRecord& rec, Intervalf interval) const
+	std::optional<HitRecord> BVH::Hit(const Ray& ray, Intervalf interval) const
 	{
+		std::optional<HitRecord> leftRec;
+		std::optional<HitRecord> rightRec;
+
 		if (!m_BoundingBox.Hit(ray, interval)) {
-			return false;
+			return leftRec;
 		}
 
-		bool hitLeft = m_Left->Hit(ray, rec, interval);
+		leftRec = m_Left->Hit(ray, interval);
 		// 若击中了左侧的包围盒需要更新最远处
-		bool hitRight = m_Right->Hit(ray, rec, 
-			Intervalf{interval.GetMin(), hitLeft ? rec.m_Time : interval.GetMax()});
+		rightRec = m_Right->Hit(ray, Intervalf{interval.GetMin(), leftRec.has_value() ? 
+			leftRec->m_Time : interval.GetMax()});
 
-		return hitLeft || hitRight;
+		return rightRec.has_value() ? rightRec : leftRec;
 	}
 
     bool BVH::BoxCompare(

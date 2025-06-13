@@ -16,7 +16,8 @@ namespace DSM {
     
     const Image& RayTracing::Render()
     {
-        auto ground_material = std::make_shared<LambertMat>(Color(0.5, 0.5, 0.5));
+        auto checkTexture = std::make_shared<CheckerTexture>(TextureDesc{10, 10, 0}, 10.0f, Color(0.2, 0.3, 0.1), Color(0.9, 0.9, 0.9));
+        auto ground_material = std::make_shared<LambertMat>(checkTexture);
         m_World->Add(std::make_shared<Sphere>(Vector3f{0, -1000, 0}, 1000, ground_material));
 
         for (int a = -11; a < 11; a++) {

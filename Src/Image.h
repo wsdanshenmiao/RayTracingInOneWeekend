@@ -16,6 +16,10 @@ namespace DSM{
         {
             SetData(width, height, std::move(data));
         }
+        Image(const Image& other) = default;
+        Image(Image&& other) noexcept = default;
+        Image& operator=(const Image&) = default;
+        Image& operator=(Image&&) noexcept = default;
 
 		std::uint32_t GetWidth() const noexcept { return m_Width; }
 		std::uint32_t GetHeight() const noexcept { return m_Height; }

@@ -16,25 +16,26 @@ namespace DSM{
         m_Objects.clear();
     }
 
-    bool HittableList::Hit(const Ray& ray, HitRecord& hitRecord, Intervalf interval) const
+    std::optional<HitRecord> HittableList::Hit(const Ray& ray, Intervalf interval) const
     {
         std::shared_lock lock{ m_Mutex };
 
-        HitRecord tmpHitRecord;
-        bool hitAnything = false;
+        std::optional<HitRecord> hitRecord;
         float closestSoFar = interval.GetMax();
 
         for (const auto& object : m_Objects) {
-            if (object->Hit(ray, tmpHitRecord, Intervalf{interval.GetMin(), closestSoFar})) {
-                hitAnything = true;
-                closestSoFar = tmpHitRecord.m_Time; // 更新最远的距离
-                hitRecord = tmpHitRecord;
+            if (auto tmpHitRecord = object->Hit(ray, Intervalf{interval.GetMin(), closestSoFar});
+                tmpHitRecord.has_value()) {
+                hitRecord = std::move(tmpHitRecord);
+                closestSoFar = hitRecord->m_Time; // 更新最远的距离
             }
         }
 
-        return hitAnything;
+        return hitRecord;
     }
-    const std::vector<std::shared_ptr<Hittable>>& HittableList::GetObjects() const
+    
+    // 需要返回副本避免悬空引用
+    std::vector<std::shared_ptr<Hittable>> HittableList::GetObjects() const
     {
         std::shared_lock lock{ m_Mutex };
         return m_Objects;

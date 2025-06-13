@@ -4,6 +4,7 @@
 
 #include "../Ray.h"
 #include "../Math/Interval.h"
+#include <optional>
 
 namespace DSM {
     struct Material;
@@ -15,6 +16,7 @@ namespace DSM {
     {
         Vector3f m_Pos;
         Vector3f m_Normal;
+        Vector2f m_UV;
         float m_Time;
         bool m_FrontFace;
         std::shared_ptr<Material> m_Material;
@@ -29,7 +31,7 @@ namespace DSM {
     struct Hittable
     {
         virtual ~Hittable() = default;
-        virtual bool Hit(const Ray& ray, HitRecord& hitRecord, Intervalf interval = Intervalf{}) const = 0;
+        virtual std::optional<HitRecord> Hit(const Ray& ray, Intervalf interval = Intervalf{}) const = 0;
         virtual AABB BoundingBox() const noexcept = 0;
     };
 }

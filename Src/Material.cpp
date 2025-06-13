@@ -3,10 +3,6 @@
 #include "Geometry/Hittable.h"
 
 namespace DSM {
-    LambertMat::LambertMat(const Color& albedo) noexcept
-        :m_Albedo(albedo){
-    }
-
     bool LambertMat::Scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered) const
     {
         auto reflectDir = record.m_Normal + RandomUnitVector3f();   // 可能会出现零向量
@@ -14,7 +10,7 @@ namespace DSM {
             reflectDir = record.m_Normal;
         }
         scattered = Ray{record.m_Pos, reflectDir.Normalized(), ray.GetTime()};
-        attenuation = m_Albedo;
+        attenuation = m_Albedo->Sample(record.m_UV);
         return true;
     }
 

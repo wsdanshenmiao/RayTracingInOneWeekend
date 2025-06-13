@@ -16,8 +16,10 @@ namespace DSM {
 		m_BoundingBox = AABB::Uion(box0, box1);
     }
 
-    bool Sphere::Hit(const Ray& ray, HitRecord& hitRecord, Intervalf interval) const
+    std::optional<HitRecord> Sphere::Hit(const Ray& ray, Intervalf interval) const
     {
+        std::optional<HitRecord> ret;
+
         Vector3f center = m_Center.At(ray.GetTime());
         auto oc = center - ray.GetOrigin();
         float a = ray.GetDirection().SqrMagnitude();
@@ -26,24 +28,26 @@ namespace DSM {
 
         float discriminant = h * h -  a * c;
         if (discriminant < 0) { // 没有根则不相交
-            return false;
+            return ret;
         }
         float sqrtD = std::sqrt(discriminant);
         float root = (h - sqrtD) / a;  // 计算方程的根
         if (!interval.Surrounds(root)) { //不再范围内
             root = (h + sqrtD) / a;
             if (!interval.Surrounds(root)) {
-                return false;
+                return ret;
             }
         }
 
-        hitRecord.m_Time = root;
+        HitRecord hitRecord;
         hitRecord.m_Pos = ray.At(root);
+        hitRecord.m_Time = root;
         hitRecord.m_Material = m_Material;
         auto n = (hitRecord.m_Pos - center) / m_Radius;
         hitRecord.SetFaceNormal(ray, n);
+        ret = std::make_optional(std::move(hitRecord));
 
-        return true;
+        return ret;
     }
 
 }

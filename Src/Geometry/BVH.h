@@ -14,7 +14,7 @@ namespace DSM {
         BVH(HittableList&& list) :BVH(list.GetObjects(), 0, list.GetObjects().size()) {}
         BVH(std::vector<std::shared_ptr<Hittable>> hittables, std::size_t begin, std::size_t end);
 
-		bool Hit(const Ray& ray, HitRecord& rec, Intervalf interval) const override;
+		std::optional<HitRecord> Hit(const Ray& ray, Intervalf interval) const override;
 		AABB BoundingBox() const noexcept override { return m_BoundingBox; }
 
     private:

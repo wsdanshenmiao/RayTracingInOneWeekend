@@ -135,11 +135,10 @@ namespace DSM{
             return Color{0, 0, 0};
         }
         auto interval = Intervalf{0.001f, std::numeric_limits<float>::max()};
-        HitRecord hitRecord;
-        if (world.Hit(ray,hitRecord, interval)) {
+        if (auto hitRecord = world.Hit(ray, interval); hitRecord.has_value()) {
             Ray scattered{};
             Color attenuation{};
-            if (hitRecord.m_Material->Scatter(ray, hitRecord, attenuation, scattered)) {
+            if (hitRecord->m_Material->Scatter(ray, hitRecord.value(), attenuation, scattered)) {
                 return attenuation * GetRayColor(scattered, world, depth - 1); // 添加材质
             }
             return Color{0, 0, 0};

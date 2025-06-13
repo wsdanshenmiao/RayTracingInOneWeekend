@@ -3,6 +3,7 @@
 #define __MATERIAL__H__
 
 #include "Color.h"
+#include "Texture.h"
 
 namespace DSM {
     class Ray;
@@ -19,11 +20,12 @@ namespace DSM {
     class LambertMat : public Material
     {
     public:
-        LambertMat(const Color& albedo) noexcept;
+        LambertMat(const Color& albedo) noexcept : m_Albedo(std::make_shared<SolidColorTexture>(TextureDesc{1, 1, 0}, albedo)) {}
+        LambertMat(std::shared_ptr<Texture> albedo) noexcept :m_Albedo(albedo){}
         virtual bool Scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered) const override;
         
     private:
-        Color m_Albedo;
+        std::shared_ptr<Texture> m_Albedo;
     };
 
     class MetalMat : public Material

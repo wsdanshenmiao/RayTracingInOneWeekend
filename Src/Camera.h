@@ -14,6 +14,10 @@ namespace DSM {
     {
     public:
         explicit Camera(float aspectRatio = 1, std::uint32_t width = 400, std::uint32_t samplePerPixel = 10) noexcept;
+        explicit Camera(const Camera&) = default;
+        explicit Camera(Camera&&) noexcept = default;
+        Camera& operator=(const Camera&) = default;
+        Camera& operator=(Camera&&) noexcept = default;
 
         const Image& Render(const HittableList& world);
 
