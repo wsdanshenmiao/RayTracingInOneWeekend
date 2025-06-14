@@ -22,8 +22,9 @@ int main(int argc, char* argv[])
 
     Instrumentor::BeginSession("RayTracing");
     RayTracing rayTracing(args[0] / args[1], args[0], args[2]);
-    auto& image = rayTracing.Render();
+    rayTracing.Render();
     Instrumentor::EndSession();
+    const auto& image = rayTracing.GetScene(1).GetCameraImage();
 	
     if (useArg) {
 		std::cout << std::format("Output Filename: {}\n", argv[4]);

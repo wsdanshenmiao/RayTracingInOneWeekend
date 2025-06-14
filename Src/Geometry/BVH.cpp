@@ -40,8 +40,8 @@ namespace DSM {
 
 		leftRec = m_Left->Hit(ray, interval);
 		// 若击中了左侧的包围盒需要更新最远处
-		rightRec = m_Right->Hit(ray, Intervalf{interval.GetMin(), leftRec.has_value() ? 
-			leftRec->m_Time : interval.GetMax()});
+		rightRec = m_Right->Hit(ray, Intervalf{interval.GetMin(), 
+			leftRec.has_value() ? leftRec->m_Time : interval.GetMax()});
 
 		return rightRec.has_value() ? rightRec : leftRec;
 	}

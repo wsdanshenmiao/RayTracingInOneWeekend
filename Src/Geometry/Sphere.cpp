@@ -1,5 +1,6 @@
 #include "Sphere.h"
 #include "../Material.h"
+#include "../Pubh.h"
 
 namespace DSM {
     Sphere::Sphere(Vector3f center, float radius, std::shared_ptr<Material> mat) noexcept
@@ -41,13 +42,23 @@ namespace DSM {
 
         HitRecord hitRecord;
         hitRecord.m_Pos = ray.At(root);
-        hitRecord.m_Time = root;
-        hitRecord.m_Material = m_Material;
         auto n = (hitRecord.m_Pos - center) / m_Radius;
         hitRecord.SetFaceNormal(ray, n);
+        hitRecord.m_UV = GetUV(hitRecord.m_Normal);
+        hitRecord.m_Time = root;
+        hitRecord.m_Material = m_Material;
         ret = std::make_optional(std::move(hitRecord));
 
         return ret;
     }
 
+    Vector2f Sphere::GetUV(Vector3f pos) noexcept
+    {
+        float theta = std::acos(pos[1]);
+        float phi = std::atan2(pos[2], pos[0]);
+
+        float u = (phi + PI) / (2 * PI);
+        float v = (theta) / PI;
+        return Vector2f{ u, v };
+    }
 }

@@ -17,9 +17,9 @@ namespace DSM {
         m_Objects->Clear();
     }
 
-    const Image& Scene::Render()
+    void Scene::Render()
     {
-        return m_Camera.Render(*m_Objects);
+        m_Camera.Render(*m_Objects);
     }
 
     void Scene::SetCamera(Camera camera) 

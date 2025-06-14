@@ -16,7 +16,7 @@ namespace DSM{
     }
 
     // 渲染场景
-    const Image& Camera::Render(const HittableList& world)
+    void Camera::Render(const HittableList& world)
     {
         UpdateCamera();
 
@@ -56,9 +56,8 @@ namespace DSM{
             std::copy(partialResult.begin(), partialResult.end(), resultIt);
             resultIt += partialResult.size();
         }
+        
 		m_Image.SetData(m_Width, m_Height, std::move(finalResult));
-
-        return m_Image;
     }
 
     std::vector<Color> Camera::Render(

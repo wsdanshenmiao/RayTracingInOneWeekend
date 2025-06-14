@@ -16,10 +16,12 @@ namespace DSM {
     public:
         RayTracing(float aspectRatio, std::uint32_t width, std::uint32_t samplePerPixel);
 
-        const Image& Render();
+        void Render();
+        const Scene& GetScene(std::size_t index) const; 
 
     private:
         void BuildScene0();
+        void BuildScene1();
         
     private:
         const float m_AspectRatio;

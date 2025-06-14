@@ -41,7 +41,7 @@ namespace DSM {
             if (tmin > rayT.GetMin()) rayT.SetMin(tmin);
             if (tmax < rayT.GetMax()) rayT.SetMax(tmax);
 
-            if (rayT.GetMin() > rayT.GetMax()) return false;
+            if (rayT.GetMin() >= rayT.GetMax()) return false;
         }
 
         return true;

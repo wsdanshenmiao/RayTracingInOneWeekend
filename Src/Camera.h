@@ -19,7 +19,7 @@ namespace DSM {
         Camera& operator=(const Camera&) = default;
         Camera& operator=(Camera&&) noexcept = default;
 
-        const Image& Render(const HittableList& world);
+        void Render(const HittableList& world);
         const Image& GetImage() const { return m_Image; }
 
     private:

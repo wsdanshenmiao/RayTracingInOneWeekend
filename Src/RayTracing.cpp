@@ -12,9 +12,10 @@ namespace DSM {
         m_SamplePerPixel(samplePerPixel){
     }
     
-    const Image& RayTracing::Render()
+    void RayTracing::Render()
     {
         BuildScene0();
+        BuildScene1();
 
         for(std::size_t i = 0; i < m_Scenes.size(); ++i){
             std::string timerName{"RayTracingTimer" + std::to_string(i)};
@@ -22,14 +23,17 @@ namespace DSM {
             m_Scenes[i].Render();
             RayTracingTimer.Stop();
         }
-
-        return m_Scenes[0].GetCameraImage();
     }
-    
+
+    const Scene &RayTracing::GetScene(std::size_t index) const
+    {
+        return m_Scenes[index];
+    }
+
     void RayTracing::BuildScene0()
     {
         auto checkTexture = std::make_shared<CheckerTexture>(
-            TextureDesc{10, 10, 0}, 10.0f, Color(0.2, 0.3, 0.1), Color(0.9, 0.9, 0.9));
+            TextureDesc{10, 10, 0}, 0.02f, Color(0.2, 0.3, 0.1), Color(0.9, 0.9, 0.9));
         auto ground_material = std::make_shared<LambertMat>(checkTexture);
         auto objs = std::make_unique<HittableList>();
         objs->Add(std::make_shared<Sphere>(Vector3f{0, -1000, 0}, 1000, ground_material));
@@ -81,13 +85,40 @@ namespace DSM {
 
         Camera camera;
         camera.m_MaxDepth = 20;
-        camera.m_Vfov = 20;
-        camera.m_Lookfrom = {13, 2, 3};
+        camera.m_Vfov = 40;
+        camera.m_Lookfrom = {15, 3, 5};
         camera.m_Lookat = {0, 0, 0};
         camera.m_Vup = {0, 1, 0};
         camera.m_DefocusAngle = 0.6f;
         camera.m_FocusDist = 10.0;
 
         m_Scenes.emplace_back(*objs, std::move(camera));
+    }
+
+    void RayTracing::BuildScene1()
+    {
+        std::unique_ptr<HittableList> world = std::make_unique<HittableList>();
+
+        auto checker = std::make_shared<CheckerTexture>(
+            TextureDesc{10, 10, 1}, .2f, Color(.2, .3, .1), Color(.9, .9, .9));
+
+        world->Add(std::make_shared<Sphere>(Vector3f{0,-10, 0}, 10, std::make_shared<LambertMat>(checker)));
+        world->Add(std::make_shared<Sphere>(Vector3f{0, 10, 0}, 10, std::make_shared<LambertMat>(checker)));
+
+        Camera cam;
+
+        cam.m_AspectRatio = 16.0 / 9.0;
+        cam.m_Width = 400;
+        cam.m_SamplePerPixel = 10;
+        cam.m_MaxDepth = 5;
+
+        cam.m_Vfov = 20;
+        cam.m_Lookfrom = Vector3f{13,2,3};
+        cam.m_Lookat = Vector3f{0,0,0};
+        cam.m_Vup = Vector3f{0,1,0};
+
+        cam.m_DefocusAngle = 0;
+
+        m_Scenes.emplace_back(*world, std::move(cam));
     }
 }

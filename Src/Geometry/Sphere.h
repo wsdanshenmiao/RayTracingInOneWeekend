@@ -19,6 +19,9 @@ namespace DSM {
         AABB BoundingBox() const noexcept override { return m_BoundingBox; }
 
     private:
+        static Vector2f GetUV(Vector3f pos) noexcept;
+
+    private:
         Ray m_Center;
         float m_Radius;
         AABB m_BoundingBox;

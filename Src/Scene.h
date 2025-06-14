@@ -19,7 +19,7 @@ namespace DSM {
         void AddObjects(const std::vector<std::shared_ptr<Hittable>>& objects);
         void Clear();
 
-        const Image& Render();
+        void Render();
         const Image& GetCameraImage() const { return m_Camera.GetImage(); }
 
         void SetCamera(Camera camera);
