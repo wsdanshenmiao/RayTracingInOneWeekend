@@ -19,12 +19,14 @@ int main(int argc, char* argv[])
     for (int i = 1 ; i < argc && i < 4 ; i++) {
         args[i - 1] = std::max(std::atof(argv[i]), 1.);
     }
+    
+    //std::cout << std::format("Width: {}, Height: {}, Sample Count: {}", args[0], args[1], args[2]);
 
     Instrumentor::BeginSession("RayTracing");
     RayTracing rayTracing(args[0] / args[1], args[0], args[2]);
     rayTracing.Render();
     Instrumentor::EndSession();
-    const auto& image = rayTracing.GetScene(1).GetCameraImage();
+    const auto& image = rayTracing.GetScene(0).GetCameraImage();
 	
     if (useArg) {
 		std::cout << std::format("Output Filename: {}\n", argv[4]);

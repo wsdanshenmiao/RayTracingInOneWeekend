@@ -57,6 +57,7 @@ namespace DSM{
         // 根据法线和折射率计算折射光线
         static constexpr Vector Refract(const Vector& v, const Vector& n, float refractiveIndex) noexcept;
         static constexpr Vector Cross(const Vector& v1, const Vector& v2) noexcept;
+        static constexpr T Dot(const Vector& v1, const Vector& v2) noexcept;
         
     private:
         std::array<T, N> m_Data;
@@ -296,6 +297,15 @@ namespace DSM{
                     v1[0] * v2[1] - v1[1] * v2[0]};
     }
 
+    template <typename T, std::size_t N> requires std::is_arithmetic_v<T>
+    constexpr T Vector<T, N>::Dot(const Vector &v1, const Vector &v2) noexcept
+    {
+        T ret{0};
+        for(std::size_t i = 0; i < N; ++i){
+            ret += v1[i] * v2[i];
+        }
+        return ret;
+    }
 
     template<typename T, std::size_t N> requires std::is_arithmetic_v<T>
     Vector<T, N> operator+(const Vector<T, N>& left, const Vector<T, N>& right) noexcept

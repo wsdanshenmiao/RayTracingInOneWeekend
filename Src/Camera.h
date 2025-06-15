@@ -56,6 +56,8 @@ namespace DSM {
         Vector3f m_DefocusDiskV;
 
         Image m_Image;
+
+        std::size_t m_ProgressCount{};
     };
 
 

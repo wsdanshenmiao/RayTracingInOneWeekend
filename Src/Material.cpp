@@ -10,7 +10,7 @@ namespace DSM {
             reflectDir = record.m_Normal;
         }
         scattered = Ray{record.m_Pos, reflectDir.Normalized(), ray.GetTime()};
-        attenuation = m_Albedo->Sample(record.m_UV);
+        attenuation = m_Albedo->Sample(record.m_Pos);
         return true;
     }
 

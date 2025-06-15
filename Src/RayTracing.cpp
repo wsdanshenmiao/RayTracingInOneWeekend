@@ -14,8 +14,10 @@ namespace DSM {
     
     void RayTracing::Render()
     {
-        BuildScene0();
-        BuildScene1();
+        //BuildScene0();
+        //BuildScene1();
+        //BuildScene2();
+        BuildScene3();
 
         for(std::size_t i = 0; i < m_Scenes.size(); ++i){
             std::string timerName{"RayTracingTimer" + std::to_string(i)};
@@ -34,6 +36,7 @@ namespace DSM {
     {
         auto checkTexture = std::make_shared<CheckerTexture>(
             TextureDesc{10, 10, 0}, 0.02f, Color(0.2, 0.3, 0.1), Color(0.9, 0.9, 0.9));
+        auto earthTexture = std::make_shared<ImageTexture>("Textures/earthmap.jpg");
         auto ground_material = std::make_shared<LambertMat>(checkTexture);
         auto objs = std::make_unique<HittableList>();
         objs->Add(std::make_shared<Sphere>(Vector3f{0, -1000, 0}, 1000, ground_material));
@@ -52,7 +55,7 @@ namespace DSM {
                         auto albedo = randomColor;
                         sphereMaterial = std::make_shared<LambertMat>(albedo);
 						Vector3f center1 = center + Vector3f{ 0, RandomFloat(0, 0.5), 0 };
-                        objs->Add(std::make_shared<Sphere>(center, center, 0.2f, sphereMaterial));
+                        objs->Add(std::make_shared<Sphere>(center, center1, 0.2f, sphereMaterial));
                     }
                     else if (choose_mat < 0.95) {
                         // metal
@@ -73,7 +76,7 @@ namespace DSM {
         auto material1 = std::make_shared<DielectricMat>(1.5);
         objs->Add(std::make_shared<Sphere>(Vector3f{0, 1, 0}, 1.0, material1));
 
-        auto material2 = std::make_shared<LambertMat>(Color{0.4, 0.2, 0.1});
+        auto material2 = std::make_shared<LambertMat>(earthTexture);
         objs->Add(std::make_shared<Sphere>(Vector3f{-4, 1, 0}, 1.0, material2));
 
         auto material3 = std::make_shared<MetalMat>(Color(0.7, 0.6, 0.5), 0.0);
@@ -83,10 +86,13 @@ namespace DSM {
         objs = std::make_unique<HittableList>(std::make_shared<BVH>(*objs));
         BVHTimer.Stop();
 
-        Camera camera;
-        camera.m_MaxDepth = 20;
+        Camera camera{};
+        camera.m_AspectRatio = m_AspectRatio;
+        camera.m_Width = m_Width;
+        camera.m_SamplePerPixel = m_SamplePerPixel;
+        camera.m_MaxDepth = 100;
         camera.m_Vfov = 40;
-        camera.m_Lookfrom = {15, 3, 5};
+        camera.m_Lookfrom = {-12, 3, 8};
         camera.m_Lookat = {0, 0, 0};
         camera.m_Vup = {0, 1, 0};
         camera.m_DefocusAngle = 0.6f;
@@ -105,20 +111,67 @@ namespace DSM {
         world->Add(std::make_shared<Sphere>(Vector3f{0,-10, 0}, 10, std::make_shared<LambertMat>(checker)));
         world->Add(std::make_shared<Sphere>(Vector3f{0, 10, 0}, 10, std::make_shared<LambertMat>(checker)));
 
-        Camera cam;
+        Camera camera{};
 
-        cam.m_AspectRatio = 16.0 / 9.0;
-        cam.m_Width = 400;
-        cam.m_SamplePerPixel = 10;
-        cam.m_MaxDepth = 5;
+        camera.m_AspectRatio = m_AspectRatio;
+        camera.m_Width = m_Width;
+        camera.m_SamplePerPixel = m_SamplePerPixel;
+        camera.m_MaxDepth = 5;
 
-        cam.m_Vfov = 20;
-        cam.m_Lookfrom = Vector3f{13,2,3};
-        cam.m_Lookat = Vector3f{0,0,0};
-        cam.m_Vup = Vector3f{0,1,0};
+        camera.m_Vfov = 20;
+        camera.m_Lookfrom = Vector3f{13,2,3};
+        camera.m_Lookat = Vector3f{0,0,0};
+        camera.m_Vup = Vector3f{0,1,0};
 
-        cam.m_DefocusAngle = 0;
+        camera.m_DefocusAngle = 0;
 
-        m_Scenes.emplace_back(*world, std::move(cam));
+        m_Scenes.emplace_back(*world, std::move(camera));
+    }
+
+    void RayTracing::BuildScene2()
+    {
+        auto earthTexture = std::make_shared<ImageTexture>("Textures/earthmap.jpg");
+        auto earthMat = std::make_shared<LambertMat>(earthTexture);
+        auto globe = std::make_shared<Sphere>(Vector3f{0,0,0}, 2, earthMat);
+
+        Camera camera{};
+
+        camera.m_AspectRatio = m_AspectRatio;
+        camera.m_Width = m_Width;
+        camera.m_SamplePerPixel = m_SamplePerPixel;
+        camera.m_MaxDepth = 50;
+
+        camera.m_Vfov = 20;
+        camera.m_Lookfrom = Vector3f{0,0,12};
+        camera.m_Lookat = Vector3f{0,0,0};
+        camera.m_Vup = Vector3f{0,1,0};
+
+        camera.m_DefocusAngle = 0;
+
+        m_Scenes.emplace_back(HittableList{globe}, std::move(camera));
+    }
+    
+    void RayTracing::BuildScene3()
+    {
+        auto world = std::make_unique<HittableList>();
+
+        auto pertext = std::make_shared<NoiceTexture>();
+        world->Add(std::make_shared<Sphere>(Vector3f{0,-1000,0}, 1000, std::make_shared<LambertMat>(pertext)));
+        world->Add(std::make_shared<Sphere>(Vector3f{0,2,0}, 2, std::make_shared<LambertMat>(pertext)));
+
+        Camera camera{};
+        camera.m_AspectRatio = m_AspectRatio;
+        camera.m_Width = m_Width;
+        camera.m_SamplePerPixel = m_SamplePerPixel;
+        camera.m_MaxDepth = 50;
+
+        camera.m_Vfov = 20;
+        camera.m_Lookfrom = Vector3f{13,2,3};
+        camera.m_Lookat = Vector3f{0,0,0};
+        camera.m_Vup = Vector3f{0,1,0};
+
+        camera.m_DefocusAngle = 0;
+
+        m_Scenes.emplace_back(*world, std::move(camera));
     }
 }

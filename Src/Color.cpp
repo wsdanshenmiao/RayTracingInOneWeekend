@@ -67,6 +67,16 @@ namespace DSM {
         return *this;
     }
 
+    float& Color::operator[](std::size_t index)
+    {
+        return m_Color[index];
+    }
+
+    const float& Color::operator[](std::size_t index) const
+    {
+        return m_Color[index];
+    }
+
     int Color::R() const
     {
         return int(m_Color[0] * 255.999);

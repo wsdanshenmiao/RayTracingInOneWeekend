@@ -22,6 +22,8 @@ namespace DSM {
     private:
         void BuildScene0();
         void BuildScene1();
+        void BuildScene2();
+        void BuildScene3();
         
     private:
         const float m_AspectRatio;

@@ -32,6 +32,9 @@ namespace DSM{
 
         std::vector<std::future<std::vector<Color>>> results(threadCount);
 
+        m_ProgressCount = threadCount;
+        std::clog << "\rScanlines remaining: " << m_ProgressCount << ' ' << std::flush;
+
         for (std::size_t i = 0; i < threadCount; ++i) {
             std::uint32_t beginW = 0, endW = m_Width;
 			std::uint32_t beginH = i * blockSize, endH = (i + 1) * blockSize;
@@ -51,7 +54,6 @@ namespace DSM{
         for (std::size_t i = 0; i < results.size(); ++i) {
 			auto& result = results[i];
             if (!result.valid()) continue;
-            std::clog << "\rScanlines remaining: " << (threadCount - i) << ' ' << std::flush;
 			auto partialResult = result.get();
             std::copy(partialResult.begin(), partialResult.end(), resultIt);
             resultIt += partialResult.size();
@@ -82,6 +84,9 @@ namespace DSM{
                 result[(j - beginH) * width + (i - beginW)] = color;
 			}
 		}
+
+        --m_ProgressCount;
+        std::clog << "\rScanlines remaining: " << m_ProgressCount << ' ' << std::flush;
 
         return result;
     }

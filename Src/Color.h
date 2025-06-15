@@ -21,6 +21,9 @@ namespace DSM {
         Color& operator*=(const Color& other);
         Color& operator/=(const Color& other);
 
+        float& operator[](std::size_t index);
+        const float& operator[](std::size_t index) const;
+
         int R() const;
         int G() const;
         int B() const;
