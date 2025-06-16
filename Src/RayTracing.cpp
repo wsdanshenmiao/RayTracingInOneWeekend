@@ -4,6 +4,7 @@
 #include "Geometry/Sphere.h"
 #include "Geometry/BVH.h"
 #include "InstrumentorTimer.h"
+#include "Geometry/Quad.h"
 
 namespace DSM {
     RayTracing::RayTracing(float aspectRatio, std::uint32_t width, std::uint32_t samplePerPixel)
@@ -17,7 +18,8 @@ namespace DSM {
         //BuildScene0();
         //BuildScene1();
         //BuildScene2();
-        BuildScene3();
+        //BuildScene3();
+        CornellBox();
 
         for(std::size_t i = 0; i < m_Scenes.size(); ++i){
             std::string timerName{"RayTracingTimer" + std::to_string(i)};
@@ -168,6 +170,37 @@ namespace DSM {
         camera.m_Vfov = 20;
         camera.m_Lookfrom = Vector3f{13,2,3};
         camera.m_Lookat = Vector3f{0,0,0};
+        camera.m_Vup = Vector3f{0,1,0};
+
+        camera.m_DefocusAngle = 0;
+
+        m_Scenes.emplace_back(*world, std::move(camera));
+    }
+    
+    void RayTracing::CornellBox()
+    {
+        auto world = std::make_unique<HittableList>();
+
+        auto red   = std::make_shared<LambertMat>(Color(.65, .05, .05));
+        auto white = std::make_shared<LambertMat>(Color(.73, .73, .73));
+        auto green = std::make_shared<LambertMat>(Color(.12, .45, .15));
+
+        world->Add(std::make_shared<Quad>(Vector3f{555,0,0}, Vector3f{0,555,0}, Vector3f{0,0,555}, green));
+        world->Add(std::make_shared<Quad>(Vector3f{0,0,0}, Vector3f{0,555,0}, Vector3f{0,0,555}, red));
+        world->Add(std::make_shared<Quad>(Vector3f{0,0,0}, Vector3f{555,0,0}, Vector3f{0,0,555}, white));
+        world->Add(std::make_shared<Quad>(Vector3f{555,555,555}, Vector3f{-555,0,0}, Vector3f{0,0,-555}, white));
+        world->Add(std::make_shared<Quad>(Vector3f{0,0,555}, Vector3f{555,0,0}, Vector3f{0,555,0}, white));
+
+        Camera camera{};
+
+        camera.m_AspectRatio = m_AspectRatio;
+        camera.m_Width = m_Width;
+        camera.m_SamplePerPixel = m_SamplePerPixel;
+        camera.m_MaxDepth = 50;
+
+        camera.m_Vfov = 40;
+        camera.m_Lookfrom = Vector3f{278, 278, -800};
+        camera.m_Lookat = Vector3f{278, 278, 0};
         camera.m_Vup = Vector3f{0,1,0};
 
         camera.m_DefocusAngle = 0;

@@ -14,6 +14,7 @@ namespace DSM {
         virtual ~Material() = default;
 
         virtual bool Scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered) const = 0;
+
     };
 
 

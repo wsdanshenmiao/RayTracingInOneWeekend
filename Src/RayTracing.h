@@ -24,6 +24,7 @@ namespace DSM {
         void BuildScene1();
         void BuildScene2();
         void BuildScene3();
+        void CornellBox();
         
     private:
         const float m_AspectRatio;

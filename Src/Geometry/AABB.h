@@ -11,9 +11,9 @@ namespace DSM {
     class AABB 
     {
     public:
-        AABB() noexcept :m_X(0, 0), m_Y(0, 0), m_Z(0, 0) {};
+        AABB() noexcept = default;
         AABB(const Intervalf& x, const Intervalf& y, const Intervalf& z) noexcept
-            : m_X(x), m_Y(y), m_Z(z) {}
+            : m_X(x), m_Y(y), m_Z(z) { PadToMinimums(); }
         AABB(const Vector3f& min, const Vector3f& max);
         AABB(const AABB&) noexcept = default;
         AABB(AABB&&) noexcept = default;
@@ -30,7 +30,10 @@ namespace DSM {
         static AABB Uion(const AABB& box0, const AABB& box1);
 
     private:
-        Intervalf m_X, m_Y, m_Z;
+        void PadToMinimums();
+
+    private:
+        Intervalf m_X{}, m_Y{}, m_Z{};
     };
 
 

@@ -9,6 +9,8 @@ namespace DSM {
         m_X = (min[0] <= max[0]) ? Intervalf{min[0], max[0]} : Intervalf{max[0], min[0]};
         m_Y = (min[1] <= max[1]) ? Intervalf{min[1], max[1]} : Intervalf{max[1], min[1]};
         m_Z = (min[2] <= max[2]) ? Intervalf{min[2], max[2]} : Intervalf{max[2], min[2]};
+
+        PadToMinimums();
     }
 
     Intervalf AABB::operator[](std::size_t index) const
@@ -75,6 +77,15 @@ namespace DSM {
 		ret.m_Y = Intervalf::Uion(box0.m_Y, box1.m_Y);
 		ret.m_Z = Intervalf::Uion(box0.m_Z, box1.m_Z);
 		return ret;
+    }
+
+    void AABB::PadToMinimums()
+    {
+        constexpr float detal = 0.0001f;
+
+        if(m_X.Size() > detal) m_X = m_X.Expand(detal);
+        if(m_Y.Size() > detal) m_Y = m_Y.Expand(detal);
+        if(m_Z.Size() > detal) m_Z = m_Z.Expand(detal);
     }
 
 } // namespace DSM
