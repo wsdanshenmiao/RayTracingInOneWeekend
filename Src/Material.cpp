@@ -10,7 +10,7 @@ namespace DSM {
             reflectDir = record.m_Normal;
         }
         scattered = Ray{record.m_Pos, reflectDir.Normalized(), ray.GetTime()};
-        attenuation = m_Albedo->Sample(record.m_Pos);
+        attenuation = m_Albedo->Sample(record.m_UV);
         return true;
     }
 
@@ -56,4 +56,20 @@ namespace DSM {
         r0 = r0 * r0;
         return r0 + (1 - r0) * std::pow((1 - cos),5.f);
     }
+
+
+    bool DiffuseLightMat::Scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered) const
+    {
+        return false;
+    }
+
+    Color DiffuseLightMat::Emitted(const Vector2f& uv, const Vector3f& pos)
+    {
+        return m_Texture->Sample(uv);
+    }
+
+
+
+
+
 }

@@ -141,16 +141,15 @@ namespace DSM{
         auto interval = Intervalf{0.001f, std::numeric_limits<float>::max()};
         if (auto hitRecord = world.Hit(ray, interval); hitRecord.has_value()) {
             Ray scattered{};
-            Color attenuation{};
+            Color attenuation{0, 0, 0};
+            Color emission = hitRecord->m_Material->Emitted(hitRecord->m_UV, hitRecord->m_Pos);
             if (hitRecord->m_Material->Scatter(ray, hitRecord.value(), attenuation, scattered)) {
-                return attenuation * GetRayColor(scattered, world, depth - 1); // 添加材质
+                attenuation *= GetRayColor(scattered, world, depth - 1); // 添加材质
             }
-            return Color{0, 0, 0};
+            return attenuation + emission;
         }
         
-        float y = ray.GetDirection().Normalized()[1];
-        float a = 0.5f * (y + 1);  // [0, 1]
-        return (1.0f - a) * Color(1.0, 1.0, 1.0) + a * Color(0.5, 0.7, 1.0);
+        return m_Background;
     }
 
     // 获取随机偏移

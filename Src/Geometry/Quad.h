@@ -6,6 +6,7 @@
 #include "AABB.h"
 
 namespace DSM {
+    class HittableList;
 
     class Quad : public Hittable
     {
@@ -25,6 +26,13 @@ namespace DSM {
         float m_D;  // 用于计算射线与平面的交点
         Vector3f m_W;  // 用于计算交点是否在四边形内
     };
+
+    
+    namespace Geometry
+    {
+        std::shared_ptr<HittableList> Box(const Vector3f& a, const Vector3f& b, std::shared_ptr<Material> mat);
+    } // namespace Geometry
+    
     
 } // namespace DSM 
 

@@ -14,7 +14,7 @@ namespace DSM {
         virtual ~Material() = default;
 
         virtual bool Scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered) const = 0;
-
+        virtual Color Emitted(const Vector2f& uv, const Vector3f& pos) { return Color{0,0,0}; }
     };
 
 
@@ -53,6 +53,19 @@ namespace DSM {
         float m_RefractiveIndex;
     };
     
+    class DiffuseLightMat : public Material
+    {
+    public:
+        DiffuseLightMat(std::shared_ptr<Texture> tex) : m_Texture(tex) {}
+        DiffuseLightMat(const Color& emit) : m_Texture(std::make_shared<SolidColorTexture>(emit)) {}
+
+        virtual bool Scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered) const override;
+        virtual Color Emitted(const Vector2f& uv, const Vector3f& pos) override;
+
+    private:
+        std::shared_ptr<Texture> m_Texture{};
+    };
+
 }
 
 

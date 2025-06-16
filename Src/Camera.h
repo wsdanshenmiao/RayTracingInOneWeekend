@@ -45,6 +45,7 @@ namespace DSM {
         Vector3f m_Vup = Vector3f{0,1,0};
 		float m_DefocusAngle = 0; // 焦散角度，也就是景深
 		float m_FocusDist = 10; // 焦距
+        Color m_Background{0, 0, 0};
     
     private:
         std::uint32_t m_Height;

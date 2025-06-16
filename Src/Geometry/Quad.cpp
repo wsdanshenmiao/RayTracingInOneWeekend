@@ -1,4 +1,5 @@
 #include "Quad.h"
+#include "HittableList.h"
 
 namespace DSM {
     Quad::Quad(Vector3f q, Vector3f u, Vector3f v, std::shared_ptr<Material> mat) noexcept
@@ -44,4 +45,29 @@ namespace DSM {
         return result;
     }
 
-} // namespace DSM 
+    namespace Geometry {    
+        std::shared_ptr<HittableList> Geometry::Box(const Vector3f &a, const Vector3f &b, std::shared_ptr<Material> mat)
+        {
+            auto sides = std::make_shared<HittableList>();
+
+            // Construct the two opposite vertices with the minimum and maximum coordinates.
+            auto min = Vector3f{std::fmin(a[0],b[0]), std::fmin(a[1],b[1]), std::fmin(a[2],b[2])};
+            auto max = Vector3f{std::fmax(a[0],b[0]), std::fmax(a[1],b[1]), std::fmax(a[2],b[2])};
+
+            auto dx = Vector3f{max[0] - min[0], 0, 0};
+            auto dy = Vector3f{0, max[1] - min[1], 0};
+            auto dz = Vector3f{0, 0, max[2] - min[2]};
+
+            sides->Add(std::make_shared<Quad>(Vector3f{min[0], min[1], max[2]},  dx,  dy, mat)); // front
+            sides->Add(std::make_shared<Quad>(Vector3f{max[0], min[1], max[2]}, -dz,  dy, mat)); // right
+            sides->Add(std::make_shared<Quad>(Vector3f{max[0], min[1], min[2]}, -dx,  dy, mat)); // back
+            sides->Add(std::make_shared<Quad>(Vector3f{min[0], min[1], min[2]},  dz,  dy, mat)); // left
+            sides->Add(std::make_shared<Quad>(Vector3f{min[0], max[1], max[2]},  dx, -dz, mat)); // top
+            sides->Add(std::make_shared<Quad>(Vector3f{min[0], min[1], min[2]},  dx,  dz, mat)); // bottom
+
+            return sides;
+        }
+    } // namespace Geometry
+
+} // namespace DSM
+

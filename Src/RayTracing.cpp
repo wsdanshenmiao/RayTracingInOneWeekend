@@ -20,7 +20,8 @@ namespace DSM {
         //BuildScene2();
         //BuildScene3();
         CornellBox();
-
+        //SampleLight();
+        
         for(std::size_t i = 0; i < m_Scenes.size(); ++i){
             std::string timerName{"RayTracingTimer" + std::to_string(i)};
             InstrumentationTimer RayTracingTimer{timerName.c_str()};
@@ -99,6 +100,7 @@ namespace DSM {
         camera.m_Vup = {0, 1, 0};
         camera.m_DefocusAngle = 0.6f;
         camera.m_FocusDist = 10.0;
+        camera.m_Background = Color{0.70, 0.80, 1.00};
 
         m_Scenes.emplace_back(*objs, std::move(camera));
     }
@@ -173,6 +175,7 @@ namespace DSM {
         camera.m_Vup = Vector3f{0,1,0};
 
         camera.m_DefocusAngle = 0;
+        camera.m_Background = Color{0.70, 0.80, 1.00};
 
         m_Scenes.emplace_back(*world, std::move(camera));
     }
@@ -184,12 +187,18 @@ namespace DSM {
         auto red   = std::make_shared<LambertMat>(Color(.65, .05, .05));
         auto white = std::make_shared<LambertMat>(Color(.73, .73, .73));
         auto green = std::make_shared<LambertMat>(Color(.12, .45, .15));
+        auto light = std::make_shared<DiffuseLightMat>(Color(15, 15, 15));
 
         world->Add(std::make_shared<Quad>(Vector3f{555,0,0}, Vector3f{0,555,0}, Vector3f{0,0,555}, green));
         world->Add(std::make_shared<Quad>(Vector3f{0,0,0}, Vector3f{0,555,0}, Vector3f{0,0,555}, red));
         world->Add(std::make_shared<Quad>(Vector3f{0,0,0}, Vector3f{555,0,0}, Vector3f{0,0,555}, white));
         world->Add(std::make_shared<Quad>(Vector3f{555,555,555}, Vector3f{-555,0,0}, Vector3f{0,0,-555}, white));
         world->Add(std::make_shared<Quad>(Vector3f{0,0,555}, Vector3f{555,0,0}, Vector3f{0,555,0}, white));
+        world->Add(std::make_shared<Quad>(Vector3f{343, 554, 332}, Vector3f{-130,0,0}, Vector3f{0,0,-105}, light));
+
+
+        world->Add(Geometry::Box(Vector3f{130, 0, 65}, Vector3f{295, 165, 230}, white));
+        world->Add(Geometry::Box(Vector3f{265, 0, 295}, Vector3f{430, 330, 460}, white));
 
         Camera camera{};
 
@@ -204,6 +213,37 @@ namespace DSM {
         camera.m_Vup = Vector3f{0,1,0};
 
         camera.m_DefocusAngle = 0;
+        camera.m_Background = Color{0, 0, 0};
+
+        m_Scenes.emplace_back(*world, std::move(camera));
+    }
+    
+    void RayTracing::SampleLight()
+    {
+        auto world = std::make_unique<HittableList>();
+
+        auto earthTexture = std::make_shared<ImageTexture>("Textures/earthmap.jpg");
+        world->Add(std::make_shared<Sphere>(Vector3f{0,-1000,0}, 1000, std::make_shared<LambertMat>(Color{0.5, 0.5, 0.5})));
+        world->Add(std::make_shared<Sphere>(Vector3f{0,2,0}, 2, std::make_shared<LambertMat>(earthTexture)));
+
+        auto difflight = std::make_shared<DiffuseLightMat>(Color(4,4,4));
+        world->Add(std::make_shared<Sphere>(Vector3f{0,7,0}, 2, difflight));
+        world->Add(std::make_shared<Quad>(Vector3f{3,1,-2}, Vector3f{2,0,0}, Vector3f{0,2,0}, difflight));
+
+        Camera camera{};
+
+        camera.m_AspectRatio = m_AspectRatio;
+        camera.m_Width = m_Width;
+        camera.m_SamplePerPixel = m_SamplePerPixel;
+        camera.m_MaxDepth = 50;
+
+        camera.m_Vfov = 20;
+        camera.m_Lookfrom = Vector3f{26,3,6};
+        camera.m_Lookat = Vector3f{0,2,0};
+        camera.m_Vup = Vector3f{0,1,0};
+
+        camera.m_DefocusAngle = 0;
+        camera.m_Background = Color{0, 0, 0};
 
         m_Scenes.emplace_back(*world, std::move(camera));
     }
