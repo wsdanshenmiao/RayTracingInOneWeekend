@@ -22,6 +22,8 @@ namespace DSM {
 
         bool operator==(const AABB& other) const noexcept = default;
         Intervalf operator[](std::size_t index) const;
+        AABB& operator+=(const Vector3f& offset);
+        AABB& operator-=(const Vector3f& offset);
 
         bool Hit(const Ray& ray, Intervalf rayT) const;
         std::size_t LongestAxis() const noexcept;
@@ -36,6 +38,11 @@ namespace DSM {
         Intervalf m_X{}, m_Y{}, m_Z{};
     };
 
+    inline AABB operator+(AABB box, const Vector3f& offset) { return box += offset; }
+    inline AABB operator+(const Vector3f& offset, AABB box) { return box += offset; }
+
+    inline AABB operator-(AABB box, const Vector3f& offset) { return box -= offset; }
+    inline AABB operator-(const Vector3f& offset, AABB box) { return box -= offset; }
 
 } // namespace DSM
 

@@ -20,6 +20,8 @@ namespace DSM{
 
         constexpr std::partial_ordering operator<=>(const Interval& other) const noexcept;
         constexpr bool operator==(const Interval& other) const noexcept = default;
+        constexpr Interval& operator+=(T val) noexcept;
+        constexpr Interval& operator-=(T val) noexcept;
 
         constexpr T Size() const noexcept;
         constexpr T Clamp(T value) const noexcept;
@@ -64,6 +66,22 @@ namespace DSM{
             return std::partial_ordering::less;
         }
         return std::partial_ordering::unordered;
+    }
+
+    template <typename T> requires std::is_arithmetic_v<T>
+    constexpr Interval<T> &Interval<T>::operator+=(T val) noexcept
+    {
+        m_Min += val;
+        m_Max += val;
+        return *this;
+    }
+
+    template <typename T> requires std::is_arithmetic_v<T>
+    constexpr Interval<T> &Interval<T>::operator-=(T val) noexcept
+    {
+        m_Min -= val;
+        m_Max -= val;
+        return *this;
     }
 
     template <typename T> requires std::is_arithmetic_v<T>
@@ -133,6 +151,24 @@ namespace DSM{
         return m_Min <= value && value <= m_Max;
     }
 
+    
+    
+    
+    
+    
+    template <typename T> requires std::is_arithmetic_v<T>
+    Interval<T> operator+(Interval<T> i, T val) { return i += val; }
+    template <typename T> requires std::is_arithmetic_v<T>
+    Interval<T> operator+(T val, Interval<T> i) { return i += val; }    
+    template <typename T> requires std::is_arithmetic_v<T>
+    Interval<T> operator-(Interval<T> i, T val) { return i -= val; }
+    template <typename T> requires std::is_arithmetic_v<T>
+    Interval<T> operator-(T val, Interval<T> i) { return i -= val; }
+    
+    
+    
+    
+    
     using Intervalf = Interval<float>;
     using Intervald = Interval<double>;
     using intervali = Interval<int>;

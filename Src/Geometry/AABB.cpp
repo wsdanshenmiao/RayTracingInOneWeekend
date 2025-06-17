@@ -25,6 +25,22 @@ namespace DSM {
         return Intervalf{ 0, 0 };
     }
 
+    AABB &AABB::operator+=(const Vector3f &offset)
+    {
+        m_X += offset[0];
+        m_Y += offset[1];
+        m_Z += offset[2];
+        return *this;
+    }
+
+    AABB &AABB::operator-=(const Vector3f &offset)
+    {
+        m_X -= offset[0];
+        m_Y -= offset[1];
+        m_Z -= offset[2];
+        return *this;
+    }
+
     bool AABB::Hit(const Ray& ray, Intervalf rayT) const
     {
         const Vector3f& origin = ray.GetOrigin();
