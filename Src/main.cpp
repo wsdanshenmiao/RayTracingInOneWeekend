@@ -1,0 +1,43 @@
+#include <iostream>
+#include <format>
+#include "RayTracing.h"
+#include "Math/Vector.h"
+#include "Image.h"
+#include "InstrumentorTimer.h"
+#include "print"
+
+
+using namespace DSM;
+
+int main(int argc, char* argv[])
+{
+    bool useArg = argc == 5;
+    if (argc != 1 && argc != 4 && argc != 5) {
+        std::cout << std::format("Usage: {} <Width> <Height> <Sample Count> <Output Filename>\n", argv[0]);
+        return -1;
+    }
+
+    Vector3f args{400, 400, 10};
+    for (int i = 1 ; i < argc && i < 4 ; i++) {
+        args[i - 1] = std::max(float(std::atof(argv[i])), 1.f);
+    }
+    
+    //std::cout << std::format("Width: {}, Height: {}, Sample Count: {}", args[0], args[1], args[2]);
+
+    Instrumentor::BeginSession("RayTracing");
+    RayTracing rayTracing(args[0] / args[1], args[0], args[2]);
+    rayTracing.Render();
+    Instrumentor::EndSession();
+    const auto& image = rayTracing.GetScene(0).GetCameraImage();
+	
+    if (useArg) {
+		std::cout << std::format("Output Filename: {}\n", argv[4]);
+        image.SaveToFilePPM(argv[4]);
+    }
+    else {
+		image.SaveToFilePPM("output.ppm");
+		std::clog << "Image saved to output.ppm\n";
+    }
+
+    return 0;
+}

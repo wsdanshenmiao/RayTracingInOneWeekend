@@ -1,0 +1,19 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(RayTracing VERSION 1.0)
+
+add_compile_definitions(UNICODE _UNICODE)
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+file(GLOB_RECURSE SOURCE_FILES Src/*.cpp)
+file(GLOB_RECURSE HEAD_FILES Src/*.h)
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEAD_FILES})
+
+
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Textures)
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Textures DESTINATION ${CMAKE_BINARY_DIR})
+endif()
+
+
