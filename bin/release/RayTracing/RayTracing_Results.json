@@ -1,1 +1,1 @@
-{"otherData": {},"traceEvents":[{"cat":"function","dur":169212624,"name":"RayTracingTimer0","ph":"X","pid":"RayTracing","tid":1545404687637717116,"ts":30221577060}]}
+{"otherData": {},"traceEvents":[{"cat":"function","dur":9952949902,"name":"RayTracingTimer0","ph":"X","pid":"RayTracing","tid":2786374110048788865,"ts":6348219681}]}

@@ -18,8 +18,12 @@ namespace DSM {
         std::optional<HitRecord> Hit(const Ray& ray, Intervalf interval = Intervalf{}) const override;
         AABB BoundingBox() const noexcept override { return m_BoundingBox; }
 
+        // float PDFValue(const Vector3f& origin, const Vector3f& dir) const override;
+        // Vector3f Random(const Vector3f& origin) const override;
+
     private:
         static Vector2f GetUV(Vector3f pos) noexcept;
+        static Vector3f RandomInSphere(float radius, float distanceSquared);
 
     private:
         Ray m_Center;

@@ -14,6 +14,11 @@ namespace DSM {
         auto r = LinearToGamma(m_Color[0]);
         auto g = LinearToGamma(m_Color[1]);
         auto b = LinearToGamma(m_Color[2]);
+
+        // 处理NaN值
+        if(r != r) r = 0;
+        if(g != g) g = 0;
+        if(b != b) b = 0;
         
         int rbyte = int(interval.Clamp(r) * 256);
         int gbyte = int(interval.Clamp(g) * 256);

@@ -6,3 +6,4 @@ Output/The[[:space:]]Next[[:space:]]Week/CornellBox.ppm filter=lfs diff=lfs merg
 Output/The[[:space:]]Next[[:space:]]Week/Final.ppm filter=lfs diff=lfs merge=lfs -text
 Output/The[[:space:]]Next[[:space:]]Week/CornellSmoke.ppm filter=lfs diff=lfs merge=lfs -text
 Output/The[[:space:]]Next[[:space:]]Week/SampleLight.ppm filter=lfs diff=lfs merge=lfs -text
+Output/The[[:space:]]Rest[[:space:]]Of[[:space:]]Your[[:space:]]Life/Final.ppm filter=lfs diff=lfs merge=lfs -text

@@ -1,6 +1,7 @@
 #include "Sphere.h"
 #include "../Material.h"
 #include "../Pubh.h"
+#include "../Math/ONB.h"
 
 namespace DSM {
     Sphere::Sphere(Vector3f center, float radius, std::shared_ptr<Material> mat) noexcept
@@ -52,6 +53,26 @@ namespace DSM {
         return ret;
     }
 
+    // float Sphere::PDFValue(const Vector3f& origin, const Vector3f& dir) const
+    // {
+    //     auto rec = Hit(Ray{origin, dir}, Intervalf{0.001f, std::numeric_limits<float>::max()});
+    //     if(!rec.has_value()) return 0;
+
+    //     float sqrMagnitude = (origin - m_Center.GetOrigin()).SqrMagnitude();
+    //     float sinTheta2 = m_Radius * m_Radius / sqrMagnitude;
+    //     float cosThetaMax = std::sqrt(1 - sinTheta2);
+    //     float solidAngle = 2 * PI * (1 - cosThetaMax);
+
+    //     return 1.f / solidAngle;
+    // }
+
+    // Vector3f Sphere::Random(const Vector3f &origin) const
+    // {
+    //     Vector3f dir = m_Center.GetOrigin() - origin;
+    //     ONB onb{dir};
+    //     return onb.Transform(RandomInSphere(m_Radius, dir.SqrMagnitude()));
+    // }
+
     Vector2f Sphere::GetUV(Vector3f pos) noexcept
     {
         float theta = std::acos(pos[1]);
@@ -61,4 +82,21 @@ namespace DSM {
         float v = (theta) / PI;
         return Vector2f{ u, v };
     }
+    
+    Vector3f Sphere::RandomInSphere(float radius, float distanceSquared)
+    {
+        auto r1 = RandomFloat();
+        auto r2 = RandomFloat();
+        auto z = 1 + r2 * (std::sqrt(1 - radius * radius / distanceSquared) - 1);
+
+        auto phi = 2 * PI * r1;
+        auto x = std::cos(phi) * std::sqrt(1-z*z);
+        auto y = std::sin(phi) * std::sqrt(1-z*z);
+
+        return Vector3f{x, y, z};
+    }
+
+
+
+
 }

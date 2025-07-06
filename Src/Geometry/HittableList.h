@@ -26,6 +26,9 @@ namespace DSM {
         std::optional<HitRecord> Hit(const Ray& ray, Intervalf interval = Intervalf{}) const override;
 		AABB BoundingBox() const noexcept override { return m_BoundingBox; }
 
+        float PDFValue(const Vector3f& origin, const Vector3f& dir) const override;
+        Vector3f Random(const Vector3f& origin) const override;
+
         std::vector<std::shared_ptr<Hittable>> GetObjects() const;
 
     private:

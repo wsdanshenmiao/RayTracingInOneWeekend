@@ -205,15 +205,18 @@ namespace DSM {
 
 
         auto aluminum = std::make_shared<MetalMat>(Color{0.8, 0.85, 0.88}, 0.0);
-        std::shared_ptr<Hittable> box1 = Geometry::Box(Vector3f{0,0,0}, Vector3f{165,330,165}, aluminum);
+        std::shared_ptr<Hittable> box1 = Geometry::Box(Vector3f{0,0,0}, Vector3f{165,330,165}, white);
         box1 = std::make_shared<RotateY>(box1, 15);
         box1 = std::make_shared<Translate>(box1, Vector3f{265,0,295});
         world->Add(box1);
 
-        std::shared_ptr<Hittable> box2 = Geometry::Box(Vector3f{0,0,0}, Vector3f{165,165,165}, white);
-        box2 = std::make_shared<RotateY>(box2, -18);
-        box2 = std::make_shared<Translate>(box2, Vector3f{130,0,65});
-        world->Add(box2);
+        auto glass = std::make_shared<DielectricMat>(1.5);
+        world->Add(std::make_shared<Sphere>(Vector3f{190,90,190}, 90, glass));
+
+        // std::shared_ptr<Hittable> box2 = Geometry::Box(Vector3f{0,0,0}, Vector3f{165,165,165}, white);
+        // box2 = std::make_shared<RotateY>(box2, -18);
+        // box2 = std::make_shared<Translate>(box2, Vector3f{130,0,65});
+        // world->Add(box2);
 
         //world->Add(Geometry::Box(Vector3f{130, 0, 65}, Vector3f{295, 165, 230}, white));
         //world->Add(Geometry::Box(Vector3f{265, 0, 295}, Vector3f{430, 330, 460}, white));

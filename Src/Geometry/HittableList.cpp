@@ -40,7 +40,23 @@ namespace DSM{
 
         return hitRecord;
     }
-    
+
+    float HittableList::PDFValue(const Vector3f &origin, const Vector3f &dir) const
+    {
+        float weight = 1.f / m_Objects.size();
+        float sum = 0;
+        for(const auto& obj : m_Objects){
+            sum += obj->PDFValue(origin, dir) * weight;
+        }
+        return sum;
+    }
+
+    Vector3f HittableList::Random(const Vector3f &origin) const
+    {
+        int size = int(m_Objects.size());
+        return m_Objects[RandomInt(0, size)]->Random(origin);
+    }
+
     // 需要返回副本避免悬空引用
     std::vector<std::shared_ptr<Hittable>> HittableList::GetObjects() const
     {
