@@ -27,5 +27,5 @@ lib/
 
 
 .xmake
-bin
+bin/
 .idea
