@@ -4,6 +4,7 @@
 
 #include "Math/Vector.h"
 #include "Image.h"
+#include <atomic>
 
 namespace DSM {
     struct Hittable;
@@ -33,7 +34,8 @@ namespace DSM {
 			const Hittable& world,
             const Hittable& light,
 			std::uint32_t beginW, std::uint32_t endW,
-			std::uint32_t beginH, std::uint32_t endH);
+			std::uint32_t beginH, std::uint32_t endH,
+            std::atomic<int>& progress);
 
 
     public:
@@ -46,6 +48,7 @@ namespace DSM {
 
         std::uint32_t m_Width = 400;
         int m_MaxDepth = 10;        // 限制光线追踪最大深度
+        bool m_UseMultithread = true;   // 是否开启多线程渲染
         float m_Vfov = 90;
         Vector3f m_Lookfrom = Vector3f{0,0,0};  // 在哪看
         Vector3f m_Lookat = Vector3f{0,0,-1};   // 看哪里
@@ -64,8 +67,6 @@ namespace DSM {
         Vector3f m_DefocusDiskV;
 
         Image m_Image;
-
-        std::size_t m_ProgressCount{};
     };
 
 

@@ -27,8 +27,10 @@ namespace DSM{
 
     inline float RandomFloat(float min = 0, float max = 1)
     {
-        static std::random_device seed{};
-        static std::mt19937_64 gen{seed()};
+        // 使用 thread_local 随机数发生器：
+        // 原本为 static 共享实例，多线程渲染时多个线程会并发访问同一个
+        // 发生器，构成数据竞争（未定义行为）。改为每线程独立实例后可安全并发。
+        thread_local std::mt19937_64 gen{std::random_device{}()};
         std::uniform_real_distribution<float> dist{min, max};
         return dist(gen);
     }

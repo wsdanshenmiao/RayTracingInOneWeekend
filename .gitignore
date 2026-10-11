@@ -29,3 +29,4 @@ lib/
 .xmake
 bin/
 .idea
+.workbuddy/

@@ -23,6 +23,19 @@ namespace DSM{
     {
         UpdateCamera();
 
+        // 渲染进度计数：仅用于显示。作为局部原子变量被各工作线程共享递减，
+        // 避免使用非拷贝/非移动的成员变量，从而保持 Camera 可拷贝可移动。
+        std::atomic<int> progress{0};
+
+        // 单线程路径：关闭多线程时，直接在当前线程渲染整幅图像
+        if (!m_UseMultithread) {
+            progress = 1;
+            std::clog << "\rScanlines remaining: " << progress.load() << ' ' << std::flush;
+            auto singleResult = Render(world, light, 0, m_Width, 0, m_Height, progress);
+            m_Image.SetData(m_Width, m_Height, std::move(singleResult));
+            return;
+        }
+
         // 计算需要分配的线程数
 		const bool rowSplit = m_Width < m_Height;
         const std::size_t maxThreads = rowSplit ? m_Width : m_Height;
@@ -35,8 +48,8 @@ namespace DSM{
 
         std::vector<std::future<std::vector<Color>>> results(threadCount);
 
-        m_ProgressCount = threadCount;
-        std::clog << "\rScanlines remaining: " << m_ProgressCount << ' ' << std::flush;
+        progress = static_cast<int>(threadCount);
+        std::clog << "\rScanlines remaining: " << progress.load() << ' ' << std::flush;
 
         for (std::size_t i = 0; i < threadCount; ++i) {
             std::uint32_t beginW = 0, endW = m_Width;
@@ -47,8 +60,8 @@ namespace DSM{
             }
 
             results[i] = std::async(std::launch::async,
-                [this, &world, &light, beginW, endW, beginH, endH] {
-                    return this->Render(world, light, beginW, endW, beginH, endH);
+                [this, &world, &light, &progress, beginW, endW, beginH, endH] {
+                    return this->Render(world, light, beginW, endW, beginH, endH, progress);
                 });
         }
 
@@ -69,7 +82,8 @@ namespace DSM{
 		const Hittable& world,
         const Hittable& light,
         std::uint32_t beginW, std::uint32_t endW, 
-        std::uint32_t beginH, std::uint32_t endH)
+        std::uint32_t beginH, std::uint32_t endH,
+        std::atomic<int>& progress)
     {
         const float invSamplePerPixel = 1.0f / (m_SqrtSPP * m_SqrtSPP);
 
@@ -92,8 +106,8 @@ namespace DSM{
 			}
 		}
 
-        --m_ProgressCount;
-        std::clog << "\rScanlines remaining: " << m_ProgressCount << ' ' << std::flush;
+        --progress;
+        std::clog << "\rScanlines remaining: " << progress.load() << ' ' << std::flush;
 
         return result;
     }
@@ -160,7 +174,6 @@ namespace DSM{
                 if(srec.m_SkipPDF){
                     return srec.m_Attenuation * GetRayColor(srec.m_SkipPDFRay, depth - 1, world, light);
                 }
-
 
                 auto lightPDF = std::make_shared<HittablePDF>(light, hitRecord->m_Pos);
                 MixturePDF pdf{lightPDF, srec.m_PDF};

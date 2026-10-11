@@ -6,14 +6,20 @@
 #include "InstrumentorTimer.h"
 #include "Geometry/Quad.h"
 #include "Geometry/ConstantMedium.h"
+#include <chrono>
+#include <format>
+#include <string>
 #include <print>
 
 
 namespace DSM {
-    RayTracing::RayTracing(float aspectRatio, std::uint32_t width, std::uint32_t samplePerPixel)
+    RayTracing::RayTracing(float aspectRatio, std::uint32_t width, std::uint32_t samplePerPixel,
+                           int maxDepth, bool useMultithread)
         :m_AspectRatio(aspectRatio), 
         m_Width(width), 
-        m_SamplePerPixel(samplePerPixel){
+        m_SamplePerPixel(samplePerPixel),
+        m_MaxDepth(maxDepth),
+        m_UseMultithread(useMultithread){
     }
     
     void RayTracing::Render()
@@ -27,12 +33,73 @@ namespace DSM {
         //CornellSmoke();
         //FinalScene();
 
+        // 把命令行传入的渲染设置下发到所有场景
+        ApplyRenderSettings();
+
+        m_SceneTimes.clear();
+        m_SceneTimes.reserve(m_Scenes.size());
+
+        // 逐场景渲染，统计各自的光线追踪耗时
         for(std::size_t i = 0; i < m_Scenes.size(); ++i){
             std::string timerName{"RayTracingTimer" + std::to_string(i)};
             InstrumentationTimer RayTracingTimer{timerName.c_str()};
+
+            const auto startTime = std::chrono::steady_clock::now();
             m_Scenes[i]->Render();
+            const auto endTime = std::chrono::steady_clock::now();
+
             RayTracingTimer.Stop();
+
+            m_SceneTimes.push_back(
+                std::chrono::duration<double, std::milli>(endTime - startTime).count());
         }
+
+        PrintTimingSummary();
+    }
+
+    void RayTracing::ApplyRenderSettings()
+    {
+        for (auto& scene : m_Scenes) {
+            // 仅当显式指定了正数深度时才覆盖场景内置深度
+            if (m_MaxDepth > 0) {
+                scene->SetMaxDepth(m_MaxDepth);
+            }
+            scene->SetUseMultithread(m_UseMultithread);
+        }
+    }
+
+    void RayTracing::PrintTimingSummary() const
+    {
+        constexpr std::string_view line =
+            "-------------------------------------------------------------------";
+
+        double totalMs = 0.0;
+        for (double ms : m_SceneTimes) {
+            totalMs += ms;
+        }
+
+        std::println("");
+        std::println("==================== Ray Tracing Timing Report ====================");
+        std::println("  Resolution      : {} x {}", m_Width,
+                     static_cast<std::uint32_t>(m_Width / m_AspectRatio));
+        std::println("  Samples / pixel : {}", m_SamplePerPixel);
+        std::println("  Max depth       : {}",
+                     m_MaxDepth > 0 ? std::to_string(m_MaxDepth) : std::string{"per-scene"});
+        std::println("  Multithreading  : {}",
+                     m_UseMultithread ? "ON" : "OFF");
+        std::println("  Scene count     : {}", m_Scenes.size());
+        std::println("{}", line);
+
+        for (std::size_t i = 0; i < m_Scenes.size(); ++i) {
+            const double ms = (i < m_SceneTimes.size()) ? m_SceneTimes[i] : 0.0;
+            const std::string label =
+                std::format("Scene {} [{}]", i, m_Scenes[i]->GetName());
+            std::println("  {:<33}{:>12.3f} ms", label, ms);
+        }
+
+        std::println("{}", line);
+        std::println("  {:<33}{:>12.3f} ms", std::string{"Total"}, totalMs);
+        std::println("===================================================================");
     }
 
     const Scene &RayTracing::GetScene(std::size_t index) const
@@ -107,7 +174,7 @@ namespace DSM {
         camera.m_FocusDist = 10.0;
         camera.m_Background = Color{0.70, 0.80, 1.00};
 
-        m_Scenes.emplace_back(std::make_unique<Scene>(objs, nullptr, std::move(camera)));
+        m_Scenes.emplace_back(std::make_unique<Scene>(objs, nullptr, std::move(camera), "Random Spheres"));
     }
 
     void RayTracing::BuildScene1()
@@ -134,7 +201,7 @@ namespace DSM {
 
         camera.m_DefocusAngle = 0;
 
-        m_Scenes.emplace_back(std::make_unique<Scene>(world, nullptr, std::move(camera)));
+        m_Scenes.emplace_back(std::make_unique<Scene>(world, nullptr, std::move(camera), "Checkered Spheres"));
     }
 
     void RayTracing::BuildScene2()
@@ -157,7 +224,7 @@ namespace DSM {
 
         camera.m_DefocusAngle = 0;
 
-        m_Scenes.emplace_back(std::make_unique<Scene>(globe, nullptr, std::move(camera)));
+        m_Scenes.emplace_back(std::make_unique<Scene>(globe, nullptr, std::move(camera), "Earth"));
     }
     
     void RayTracing::BuildScene3()
@@ -182,7 +249,7 @@ namespace DSM {
         camera.m_DefocusAngle = 0;
         camera.m_Background = Color{0.70, 0.80, 1.00};
 
-        m_Scenes.emplace_back(std::make_unique<Scene>(world, nullptr, std::move(camera)));
+        m_Scenes.emplace_back(std::make_unique<Scene>(world, nullptr, std::move(camera), "Perlin Spheres"));
     }
     
     void RayTracing::CornellBox()
@@ -238,7 +305,7 @@ namespace DSM {
         camera.m_DefocusAngle = 0;
         camera.m_Background = Color{0,0,0};
 
-        m_Scenes.emplace_back(std::make_unique<Scene>(world, light, std::move(camera)));
+        m_Scenes.emplace_back(std::make_unique<Scene>(world, light, std::move(camera), "Cornell Box"));
     }
     
     void RayTracing::SampleLight()
@@ -272,7 +339,7 @@ namespace DSM {
         camera.m_DefocusAngle = 0;
         camera.m_Background = Color{0, 0, 0};
 
-        m_Scenes.emplace_back(std::make_unique<Scene>(world, lights, std::move(camera)));
+        m_Scenes.emplace_back(std::make_unique<Scene>(world, lights, std::move(camera), "Light Sampling"));
     }
     
     void RayTracing::CornellSmoke()
@@ -324,7 +391,7 @@ namespace DSM {
         camera.m_DefocusAngle = 0;
         camera.m_Background = Color{0,0,0};
 
-        m_Scenes.emplace_back(std::make_unique<Scene>(world, light, std::move(camera)));
+        m_Scenes.emplace_back(std::make_unique<Scene>(world, light, std::move(camera), "Cornell Smoke"));
     }
 
     void RayTracing::FinalScene()
@@ -405,6 +472,6 @@ namespace DSM {
 
         camera.m_DefocusAngle = 0;
 
-        m_Scenes.emplace_back(std::make_unique<Scene>(world, light, std::move(camera)));
+        m_Scenes.emplace_back(std::make_unique<Scene>(world, light, std::move(camera), "Final Scene"));
     }
 }
