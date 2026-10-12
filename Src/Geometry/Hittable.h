@@ -12,7 +12,7 @@ namespace DSM {
     struct Material;
     
     
-    // 相交记录
+    // 相交记录不拥有资源；使用记录期间必须保活被查询的场景及其材质。
     struct HitRecord
     {
         Vector3f m_Pos;
@@ -20,7 +20,7 @@ namespace DSM {
         Vector2f m_UV;
         float m_Time;
         bool m_FrontFace;
-        std::shared_ptr<Material> m_Material;
+        const Material* m_Material = nullptr;
 
         void SetFaceNormal(const Ray& ray, const Vector3f& n)
         {
@@ -31,6 +31,7 @@ namespace DSM {
     
     struct Hittable
     {
+        // 可并发查询同一对象，但不得同时修改或销毁它及其可达资源。
         virtual ~Hittable() = default;
         virtual std::optional<HitRecord> Hit(const Ray& ray, Intervalf interval = Intervalf{}) const = 0;
         virtual AABB BoundingBox() const noexcept = 0;

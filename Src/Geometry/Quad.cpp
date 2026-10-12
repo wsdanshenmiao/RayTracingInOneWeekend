@@ -38,7 +38,7 @@ namespace DSM {
             rec.m_Pos = p;
             rec.m_UV = Vector2f{alpha, beta};
             rec.m_Time = t;
-            rec.m_Material = m_Mat;
+            rec.m_Material = m_Mat.get();
             rec.SetFaceNormal(ray, m_Normal);
             result = std::make_optional(std::move(rec));
         }

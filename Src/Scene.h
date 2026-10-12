@@ -9,6 +9,8 @@
 
 namespace DSM {
 
+    // Render 与场景/相机修改在场景级串行执行，无需在每次光线查询时加锁。
+    // 调用方也不得通过外部别名修改正在渲染的几何体、材质或纹理。
     class Scene {
     public:
         Scene(std::shared_ptr<Hittable> world, std::shared_ptr<Hittable> light, Camera camera,
@@ -27,6 +29,7 @@ namespace DSM {
         void Clear();
 
         void Render();
+        // 返回借用引用；仅在 Render 完成且没有并发修改时读取。
         const Image& GetCameraImage() const { return m_Camera.GetImage(); }
 
         void SetCamera(Camera camera);
@@ -35,8 +38,9 @@ namespace DSM {
         const std::string& GetName() const noexcept { return m_Name; }
 
         // 渲染设置转发到内部相机
-        void SetMaxDepth(int depth) noexcept { m_Camera.m_MaxDepth = depth; }
-        void SetUseMultithread(bool useMultithread) noexcept { m_Camera.m_UseMultithread = useMultithread; }
+        void SetMaxDepth(int depth);
+        void SetUseMultithread(bool useMultithread);
+        // 与 GetCameraImage 相同，调用方须保证读取期间没有并发修改。
         const Camera& GetCamera() const noexcept { return m_Camera; }
 
     private:

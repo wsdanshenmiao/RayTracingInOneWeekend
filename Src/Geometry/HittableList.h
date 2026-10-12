@@ -6,11 +6,11 @@
 #include "AABB.h"
 #include <memory>
 #include <vector>
-#include <shared_mutex>
 
 namespace DSM {
 
-    // 多线程中进行物体的添加需要进行互斥
+    // 构建阶段由调用方串行修改；发布给渲染线程后，列表及可达资源保持只读。
+    // Add/Clear 不得与 Hit/PDFValue/Random/BoundingBox/GetObjects 并发执行。
     class HittableList : public Hittable
     {
     public:
@@ -34,7 +34,6 @@ namespace DSM {
     private:
         AABB m_BoundingBox{};
         std::vector<std::shared_ptr<Hittable>> m_Objects{};
-        mutable std::shared_mutex m_Mutex{};    // 共享互斥锁，可多个线程同时调用Hit
     };
 }
 

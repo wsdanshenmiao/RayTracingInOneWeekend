@@ -42,3 +42,12 @@ target(projectName)
         add_ldflags("-LTCG", "-OPT:REF", "-OPT:ICF")
     end
 target_end()
+
+target("RayTracingTests")
+    set_kind("binary")
+    set_default(false)
+    set_targetdir(path.join(binDir, "Tests"))
+    add_files("Src/**.cpp", "Tests/**.cpp")
+    remove_files("Src/main.cpp", "Src/RayTracing.cpp")
+    add_includedirs("Src")
+target_end()

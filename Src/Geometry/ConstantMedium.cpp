@@ -45,7 +45,7 @@ namespace DSM {
         rec.m_UV = far->m_UV;
         rec.m_Normal = Vector3f{1,0,0};
         rec.m_FrontFace = true;
-        rec.m_Material = m_PhaseFunc;
+        rec.m_Material = m_PhaseFunc.get();
         result = std::make_optional(std::move(rec));
 
         return result;

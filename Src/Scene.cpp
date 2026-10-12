@@ -39,6 +39,19 @@ namespace DSM {
 
     void Scene::SetCamera(Camera camera) 
     {
+        std::lock_guard lock{m_Mutex};
         m_Camera = std::move(camera);
+    }
+
+    void Scene::SetMaxDepth(int depth)
+    {
+        std::lock_guard lock{m_Mutex};
+        m_Camera.m_MaxDepth = depth;
+    }
+
+    void Scene::SetUseMultithread(bool useMultithread)
+    {
+        std::lock_guard lock{m_Mutex};
+        m_Camera.m_UseMultithread = useMultithread;
     }
 } // namespace DSM

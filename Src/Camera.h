@@ -20,6 +20,8 @@ namespace DSM {
         Camera& operator=(const Camera&) = default;
         Camera& operator=(Camera&&) noexcept = default;
 
+        // 同步完成所有工作线程；调用期间 world/light 及其资源须保活且保持只读。
+        // 同一相机不能同时渲染或被修改。
         void Render(const Hittable& world, const Hittable& light);
         const Image& GetImage() const { return m_Image; }
 

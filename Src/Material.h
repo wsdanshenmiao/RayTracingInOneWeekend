@@ -23,7 +23,7 @@ namespace DSM {
         virtual ~Material() = default;
 
         virtual bool Scatter(const Ray& ray, const HitRecord& record, ScatterRecord& srec) const = 0;
-        virtual Color Emitted(const HitRecord& record, const Vector2f& uv, const Vector3f& pos) { return Color{0,0,0}; }
+        virtual Color Emitted(const HitRecord& record, const Vector2f& uv, const Vector3f& pos) const { return Color{0,0,0}; }
         virtual float ScatterPDF(const Ray& ray, const HitRecord& record, const Ray& scatter) const { return 0; }
     };
 
@@ -72,7 +72,7 @@ namespace DSM {
         DiffuseLightMat(const Color& emit) : m_Texture(std::make_shared<SolidColorTexture>(emit)) {}
 
         bool Scatter(const Ray& ray, const HitRecord& record, ScatterRecord& srec) const override;
-        virtual Color Emitted(const HitRecord& record, const Vector2f& uv, const Vector3f& pos) override;
+        Color Emitted(const HitRecord& record, const Vector2f& uv, const Vector3f& pos) const override;
 
     private:
         std::shared_ptr<Texture> m_Texture{};

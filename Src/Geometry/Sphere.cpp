@@ -47,7 +47,7 @@ namespace DSM {
         hitRecord.SetFaceNormal(ray, n);
         hitRecord.m_UV = GetUV(hitRecord.m_Normal);
         hitRecord.m_Time = root;
-        hitRecord.m_Material = m_Material;
+        hitRecord.m_Material = m_Material.get();
         ret = std::make_optional(std::move(hitRecord));
 
         return ret;

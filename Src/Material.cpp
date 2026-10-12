@@ -75,7 +75,7 @@ namespace DSM {
         return false;
     }
 
-    Color DiffuseLightMat::Emitted(const HitRecord &record, const Vector2f &uv, const Vector3f &pos)
+    Color DiffuseLightMat::Emitted(const HitRecord &record, const Vector2f &uv, const Vector3f &pos) const
     {
         return record.m_FrontFace ? m_Texture->Sample(uv) : Color{0,0,0};
     }

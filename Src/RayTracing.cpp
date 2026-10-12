@@ -114,7 +114,7 @@ namespace DSM {
         auto earthTexture = std::make_shared<ImageTexture>("Textures/earthmap.jpg");
         auto ground_material = std::make_shared<LambertMat>(checkTexture);
         auto objs = std::make_shared<HittableList>();
-        objs->Add(std::make_shared<Sphere>(Vector3f{0, -1000, 0}, 1000, ground_material));
+        objs->Add(std::make_shared<Sphere>(Vector3f{0, -1000, 0}, 1000.f, ground_material));
 
         for (int a = -11; a < 11; a++) {
             for (int b = -11; b < 11; b++) {
@@ -137,25 +137,25 @@ namespace DSM {
                         auto albedo = randomColor;
                         auto fuzz = RandomFloat(0, 0.5);
                         sphereMaterial = std::make_shared<MetalMat>(albedo, fuzz);
-                        objs->Add(std::make_shared<Sphere>(center, 0.2, sphereMaterial));
+                        objs->Add(std::make_shared<Sphere>(center, 0.2f, sphereMaterial));
                     }
                     else {
                         // glass
-                        sphereMaterial = std::make_shared<DielectricMat>(1.5);
-                        objs->Add(std::make_shared<Sphere>(center, 0.2, sphereMaterial));
+                        sphereMaterial = std::make_shared<DielectricMat>(1.5f);
+                        objs->Add(std::make_shared<Sphere>(center, 0.2f, sphereMaterial));
                     }
                 }
             }
         }
 
-        auto material1 = std::make_shared<DielectricMat>(1.5);
-        objs->Add(std::make_shared<Sphere>(Vector3f{0, 1, 0}, 1.0, material1));
+        auto material1 = std::make_shared<DielectricMat>(1.5f);
+        objs->Add(std::make_shared<Sphere>(Vector3f{0, 1, 0}, 1.0f, material1));
 
         auto material2 = std::make_shared<LambertMat>(earthTexture);
-        objs->Add(std::make_shared<Sphere>(Vector3f{-4, 1, 0}, 1.0, material2));
+        objs->Add(std::make_shared<Sphere>(Vector3f{-4, 1, 0}, 1.0f, material2));
 
-        auto material3 = std::make_shared<MetalMat>(Color(0.7, 0.6, 0.5), 0.0);
-        objs->Add(std::make_shared<Sphere>(Vector3f{4, 1, 0}, 1.0, material3));
+        auto material3 = std::make_shared<MetalMat>(Color(0.7, 0.6, 0.5), 0.0f);
+        objs->Add(std::make_shared<Sphere>(Vector3f{4, 1, 0}, 1.0f, material3));
 
         InstrumentationTimer BVHTimer{"Scene0 BVH Build"};        
         objs = std::make_shared<HittableList>(std::make_shared<BVH>(*objs));
@@ -184,8 +184,8 @@ namespace DSM {
         auto checker = std::make_shared<CheckerTexture>(
             TextureDesc{10, 10, 1}, .2f, Color(.2, .3, .1), Color(.9, .9, .9));
 
-        world->Add(std::make_shared<Sphere>(Vector3f{0,-10, 0}, 10, std::make_shared<LambertMat>(checker)));
-        world->Add(std::make_shared<Sphere>(Vector3f{0, 10, 0}, 10, std::make_shared<LambertMat>(checker)));
+        world->Add(std::make_shared<Sphere>(Vector3f{0,-10, 0}, 10.0f, std::make_shared<LambertMat>(checker)));
+        world->Add(std::make_shared<Sphere>(Vector3f{0, 10, 0}, 10.0f, std::make_shared<LambertMat>(checker)));
 
         Camera camera{};
 
@@ -208,7 +208,7 @@ namespace DSM {
     {
         auto earthTexture = std::make_shared<ImageTexture>("Textures/earthmap.jpg");
         auto earthMat = std::make_shared<LambertMat>(earthTexture);
-        auto globe = std::make_shared<Sphere>(Vector3f{0,0,0}, 2, earthMat);
+        auto globe = std::make_shared<Sphere>(Vector3f{0,0,0}, 2.0f, earthMat);
 
         Camera camera{};
 
@@ -232,8 +232,8 @@ namespace DSM {
         auto world = std::make_shared<HittableList>();
 
         auto pertext = std::make_shared<NoiceTexture>();
-        world->Add(std::make_shared<Sphere>(Vector3f{0,-1000,0}, 1000, std::make_shared<LambertMat>(pertext)));
-        world->Add(std::make_shared<Sphere>(Vector3f{0,2,0}, 2, std::make_shared<LambertMat>(pertext)));
+        world->Add(std::make_shared<Sphere>(Vector3f{0,-1000,0}, 1000.0f, std::make_shared<LambertMat>(pertext)));
+        world->Add(std::make_shared<Sphere>(Vector3f{0,2,0}, 2.0f, std::make_shared<LambertMat>(pertext)));
 
         Camera camera{};
         camera.m_AspectRatio = m_AspectRatio;
@@ -271,14 +271,15 @@ namespace DSM {
         world->Add(light);
 
 
-        auto aluminum = std::make_shared<MetalMat>(Color{0.8, 0.85, 0.88}, 0.0);
+
+        auto aluminum = std::make_shared<MetalMat>(Color{0.8, 0.85, 0.88}, 0.0f);
         std::shared_ptr<Hittable> box1 = Geometry::Box(Vector3f{0,0,0}, Vector3f{165,330,165}, white);
-        box1 = std::make_shared<RotateY>(box1, 15);
+        box1 = std::make_shared<RotateY>(box1, 15.f);
         box1 = std::make_shared<Translate>(box1, Vector3f{265,0,295});
         world->Add(box1);
 
-        auto glass = std::make_shared<DielectricMat>(1.5);
-        world->Add(std::make_shared<Sphere>(Vector3f{190,90,190}, 90, glass));
+        auto glass = std::make_shared<DielectricMat>(1.5f);
+        world->Add(std::make_shared<Sphere>(Vector3f{190,90,190}, 90.f, glass));
 
         // std::shared_ptr<Hittable> box2 = Geometry::Box(Vector3f{0,0,0}, Vector3f{165,165,165}, white);
         // box2 = std::make_shared<RotateY>(box2, -18);
@@ -313,12 +314,12 @@ namespace DSM {
         auto world = std::make_shared<HittableList>();
 
         auto earthTexture = std::make_shared<ImageTexture>("Textures/earthmap.jpg");
-        world->Add(std::make_shared<Sphere>(Vector3f{0,-1000,0}, 1000, std::make_shared<LambertMat>(Color{0.5, 0.5, 0.5})));
-        world->Add(std::make_shared<Sphere>(Vector3f{0,2,0}, 2, std::make_shared<LambertMat>(earthTexture)));
+        world->Add(std::make_shared<Sphere>(Vector3f{0,-1000,0}, 1000.0f, std::make_shared<LambertMat>(Color{0.5, 0.5, 0.5})));
+        world->Add(std::make_shared<Sphere>(Vector3f{0,2,0}, 2.0f, std::make_shared<LambertMat>(earthTexture)));
 
         auto difflight = std::make_shared<DiffuseLightMat>(Color(4,4,4));
 
-        auto sphereLight = std::make_shared<Sphere>(Vector3f{0,7,0}, 2, difflight);
+        auto sphereLight = std::make_shared<Sphere>(Vector3f{0,7,0}, 2.0f, difflight);
         auto quadLight = std::make_shared<Quad>(Vector3f{3,1,-2}, Vector3f{2,0,0}, Vector3f{0,2,0}, difflight);
         auto lights = std::make_shared<HittableList>(std::vector<std::shared_ptr<Hittable>>{sphereLight, quadLight});
 
@@ -364,15 +365,15 @@ namespace DSM {
 
 
         std::shared_ptr<Hittable> box1 = Geometry::Box(Vector3f{0,0,0}, Vector3f{165,330,165}, white);
-        box1 = std::make_shared<RotateY>(box1, 15);
+        box1 = std::make_shared<RotateY>(box1, 15.f);
         box1 = std::make_shared<Translate>(box1, Vector3f{265,0,295});
 
         std::shared_ptr<Hittable> box2 = Geometry::Box(Vector3f{0,0,0}, Vector3f{165,165,165}, white);
-        box2 = std::make_shared<RotateY>(box2, -18);
+        box2 = std::make_shared<RotateY>(box2, -18.0f);
         box2 = std::make_shared<Translate>(box2, Vector3f{130,0,65});
 
-        world->Add(std::make_shared<ConstantMedium>(box1, 0.01, Color{0,0,0}));
-        world->Add(std::make_shared<ConstantMedium>(box2, 0.01, Color{1,1,1}));
+        world->Add(std::make_shared<ConstantMedium>(box1, 0.01f, Color{0,0,0}));
+        world->Add(std::make_shared<ConstantMedium>(box2, 0.01f, Color{1,1,1}));
 
         //world = std::make_shared<HittableList>(std::make_shared<BVH>(*world));
 
@@ -425,34 +426,34 @@ namespace DSM {
         auto center1 = Vector3f{400, 400, 200};
         auto center2 = center1 + Vector3f{30,0,0};
         auto sphere_material = std::make_shared<LambertMat>(Color(0.7, 0.3, 0.1));
-        world->Add(std::make_shared<Sphere>(center1, center2, 50, sphere_material));
+        world->Add(std::make_shared<Sphere>(center1, center2, 50.0f, sphere_material));
 
-        world->Add(std::make_shared<Sphere>(Vector3f{260, 150, 45}, 50, std::make_shared<DielectricMat>(1.5)));
+        world->Add(std::make_shared<Sphere>(Vector3f{260, 150, 45}, 50.0f, std::make_shared<DielectricMat>(1.5f)));
         world->Add(std::make_shared<Sphere>(
-            Vector3f{0, 150, 145}, 50, std::make_shared<MetalMat>(Color(0.8, 0.8, 0.9), 1.0)
+            Vector3f{0, 150, 145}, 50.0f, std::make_shared<MetalMat>(Color(0.8, 0.8, 0.9), 1.0f)
         ));
 
-        auto boundary = std::make_shared<Sphere>(Vector3f{360,150,145}, 70, std::make_shared<DielectricMat>(1.5));
+        auto boundary = std::make_shared<Sphere>(Vector3f{360,150,145}, 70.0f, std::make_shared<DielectricMat>(1.5f));
         world->Add(boundary);
-        world->Add(std::make_shared<ConstantMedium>(boundary, 0.2, Color(0.2, 0.4, 0.9)));
-        boundary = std::make_shared<Sphere>(Vector3f{0,0,0}, 5000, std::make_shared<DielectricMat>(1.5));
-        world->Add(std::make_shared<ConstantMedium>(boundary, .0001, Color(1,1,1)));
+        world->Add(std::make_shared<ConstantMedium>(boundary, 0.2f, Color(0.2, 0.4, 0.9)));
+        boundary = std::make_shared<Sphere>(Vector3f{0,0,0}, 5000.0f, std::make_shared<DielectricMat>(1.5f));
+        world->Add(std::make_shared<ConstantMedium>(boundary, .0001f, Color(1,1,1)));
 
         auto emat = std::make_shared<LambertMat>(std::make_shared<ImageTexture>("Textures/earthmap.jpg"));
-        world->Add(std::make_shared<Sphere>(Vector3f{400,200,400}, 100, emat));
-        auto pertext = std::make_shared<NoiceTexture>(0.4);
-        world->Add(std::make_shared<Sphere>(Vector3f{220,280,300}, 80, std::make_shared<LambertMat>(pertext)));
+        world->Add(std::make_shared<Sphere>(Vector3f{400,200,400}, 100.0f, emat));
+        auto pertext = std::make_shared<NoiceTexture>(0.4f);
+        world->Add(std::make_shared<Sphere>(Vector3f{220,280,300}, 80.0f, std::make_shared<LambertMat>(pertext)));
 
         auto boxes2 = std::make_shared<HittableList>();
         auto white = std::make_shared<LambertMat>(Color(.73, .73, .73));
         int ns = 1000;
         for (int j = 0; j < ns; j++) {
-            boxes2->Add(std::make_shared<Sphere>(RandomVector3f(0,165), 10, white));
+            boxes2->Add(std::make_shared<Sphere>(RandomVector3f(0,165), 10.0f, white));
         }
 
         world->Add(std::make_shared<Translate>(
             std::make_shared<RotateY>(
-                std::make_shared<BVH>(*boxes2), 15),
+                std::make_shared<BVH>(*boxes2), 15.f),
                 Vector3f{-100,270,395}
             )
         );
